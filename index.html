@@ -1,100 +1,104 @@
 <!DOCTYPE html>
-<html lang="sk">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Photo Upload</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wedding Photo Upload</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Open+Sans&display=swap');
+
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Open Sans', sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
       background-size: cover;
-      margin: 0; padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: #222;
-      min-height: 100vh;
+      position: relative;
+      color: #fff;
     }
-    .overlay {
-      position: fixed; top:0; left:0; right:0; bottom:0;
-      background: rgba(255 255 255 / 0.85);
-      z-index: -1;
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 0;
     }
-    #langToggle {
-      align-self: flex-end;
-      cursor: pointer;
-      background: #eee;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      padding: 0.4rem 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
+
+    .container {
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 2rem 3rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      text-align: center;
+      max-width: 400px;
+      width: 90vw;
+      backdrop-filter: blur(8px);
     }
-    #langToggle img {
-      width: 24px;
-      height: 16px;
-      user-select: none;
-    }
+
     h2 {
-      margin-bottom: 1rem;
+      font-family: 'Great Vibes', cursive;
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      color: #fff;
+      text-shadow: 0 0 10px rgba(0,0,0,0.7);
     }
+
     input[type="file"] {
-      font-size: 1.1rem;
+      font-size: 1rem;
+      margin: 1rem 0;
+      border-radius: 6px;
+      padding: 0.5rem;
+      width: 100%;
+      box-sizing: border-box;
     }
+
     button {
-      margin-top: 1rem;
       font-size: 1.2rem;
-      padding: 0.5rem 1.5rem;
-      cursor: pointer;
-      background: #6a5acd;
+      padding: 0.6rem 2rem;
       border: none;
-      color: white;
-      border-radius: 5px;
+      border-radius: 8px;
+      background: #f0a500;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
       transition: background-color 0.3s ease;
+      width: 100%;
     }
-    button:hover:not(:disabled) {
-      background: #5848c2;
+    button:hover {
+      background-color: #d18c00;
     }
-    button:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-    }
+
     #status {
       margin-top: 1rem;
-      width: 100%;
-      max-width: 400px;
+      color: #fff;
       font-weight: 600;
-      display: flex;
-      flex-direction: column-reverse;
-      gap: 0.25rem;
-      min-height: 4rem;
+      min-height: 3rem;
+      text-align: left;
+      max-height: 150px;
       overflow-y: auto;
     }
+
     #qrCode {
       margin-top: 2rem;
+      max-width: 150px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
   </style>
 </head>
 <body>
-  <div class="overlay"></div>
-
-  <button id="langToggle" aria-label="Switch language">
-    <img src="https://flagcdn.com/w20/sk.png" alt="Slovak flag" />
-    <span>Switch to English</span>
-  </button>
-
-  <h2 id="title">Nahrajte svoju fotku</h2>
-
-  <input type="file" id="fileInput" accept="image/*" multiple />
-  <button id="uploadBtn" disabled>Nahrať</button>
-
-  <div id="status" aria-live="polite" aria-relevant="additions"></div>
-
-  <div id="qrCode"></div>
+  <div class="container">
+    <h2>Upload Your Wedding Photo</h2>
+    <input type="file" id="fileInput" accept="image/*" multiple />
+    <button id="uploadBtn">Upload</button>
+    <div id="status"></div>
+    <img id="qrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://makreliak.github.io/svadba_uploader/" alt="QR Code to Wedding Upload Page" />
+  </div>
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
@@ -112,113 +116,44 @@
     const app = initializeApp(firebaseConfig);
     const storage = getStorage(app);
 
-    // Language strings
-    const texts = {
-      sk: {
-        title: "Nahrajte svoju fotku",
-        uploadBtn: "Nahrať",
-        chooseFile: "Vyberte fotku",
-        uploadSuccess: "✅ Nahralo sa úspešne!",
-        uploadFail: "❌ Nahrávanie zlyhalo:",
-        noFile: "📂 Prosím vyberte fotku.",
-        unsupported: "⚠️ HEIC obrázky nie sú podporované. Vyberte JPG alebo PNG.",
-        switchTo: "Switch to English",
-        flag: "https://flagcdn.com/w20/gb.png",
-        altFlag: "UK flag"
-      },
-      en: {
-        title: "Upload Your Photo",
-        uploadBtn: "Upload",
-        chooseFile: "Choose a photo",
-        uploadSuccess: "✅ Upload successful!",
-        uploadFail: "❌ Upload failed:",
-        noFile: "📂 Please choose a photo first.",
-        unsupported: "⚠️ HEIC images are not supported. Please select JPG or PNG.",
-        switchTo: "Switch to Slovak",
-        flag: "https://flagcdn.com/w20/sk.png",
-        altFlag: "Slovak flag"
-      }
-    };
+    document.getElementById('uploadBtn').addEventListener('click', async () => {
+      const fileInput = document.getElementById('fileInput');
+      const status = document.getElementById('status');
 
-    let currentLang = 'sk';
+      status.innerHTML = '';
 
-    const langToggle = document.getElementById('langToggle');
-    const title = document.getElementById('title');
-    const uploadBtn = document.getElementById('uploadBtn');
-    const fileInput = document.getElementById('fileInput');
-    const status = document.getElementById('status');
-
-    // Update UI texts based on language
-    function updateLanguage() {
-      const lang = texts[currentLang];
-      title.textContent = lang.title;
-      uploadBtn.textContent = lang.uploadBtn;
-      langToggle.querySelector('span').textContent = lang.switchTo;
-      langToggle.querySelector('img').src = lang.flag;
-      langToggle.querySelector('img').alt = lang.altFlag;
-    }
-
-    langToggle.addEventListener('click', () => {
-      currentLang = currentLang === 'sk' ? 'en' : 'sk';
-      updateLanguage();
-      clearStatus();
-    });
-
-    fileInput.addEventListener('change', () => {
-      uploadBtn.disabled = fileInput.files.length === 0;
-      clearStatus();
-    });
-
-    function clearStatus() {
-      status.textContent = '';
-    }
-
-    async function uploadFiles() {
-      const files = fileInput.files;
-      if (!files.length) {
-        status.textContent = texts[currentLang].noFile;
+      if (!fileInput.files.length) {
+        status.textContent = '📂 Please choose at least one photo first.';
         return;
       }
 
-      uploadBtn.disabled = true;
-      clearStatus();
+      const files = fileInput.files;
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
 
         if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
-          status.insertAdjacentHTML('afterbegin', `<div>${texts[currentLang].unsupported}</div>`);
+          status.innerHTML += `<p>⚠️ File <strong>${file.name}</strong> is HEIC and not supported.</p>`;
+          continue;
+        }
+
+        if (file.size > 10 * 1024 * 1024) {
+          status.innerHTML += `<p>⚠️ File <strong>${file.name}</strong> is larger than 10MB.</p>`;
           continue;
         }
 
         const fileName = Date.now() + '-' + file.name;
         const storageRef = ref(storage, 'uploads/' + fileName);
 
-        status.insertAdjacentHTML('afterbegin', `<div>⏳ Uploading: ${file.name}</div>`);
-
         try {
+          status.innerHTML += `<p>⏳ Uploading <strong>${file.name}</strong>...</p>`;
           await uploadBytes(storageRef, file);
-          // Remove uploading line and add success line
-          status.insertAdjacentHTML('afterbegin', `<div>✅ Uploaded: ${file.name}</div>`);
+          status.innerHTML += `<p>✅ Uploaded <strong>${file.name}</strong> successfully!</p>`;
         } catch (error) {
-          status.insertAdjacentHTML('afterbegin', `<div>❌ Failed: ${file.name} - ${error.message}</div>`);
+          status.innerHTML += `<p>❌ Upload failed for <strong>${file.name}</strong>: ${error.message}</p>`;
         }
       }
-
-      // After all uploads
-      status.textContent = '🎉 ' + texts[currentLang].uploadSuccess;
-      uploadBtn.disabled = false;
-      fileInput.value = '';
-    }
-
-    uploadBtn.addEventListener('click', uploadFiles);
-
-    updateLanguage();
-
-    // QR code embed - Google Charts API
-    const qrUrl = 'https://makreliak.github.io/svadba_uploader/';
-    const qrCodeDiv = document.getElementById('qrCode');
-    qrCodeDiv.innerHTML = `<img src="https://chart.googleapis.com/chart?cht=qr&chs=140x140&chl=${encodeURIComponent(qrUrl)}&chld=L|1" alt="QR code" />`;
+    });
   </script>
 </body>
 </html>
