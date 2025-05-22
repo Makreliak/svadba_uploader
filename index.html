@@ -2,42 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Photo Upload</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #f3f4f6, #e2e8f0);
+      margin: 0;
+    }
+
+    .card {
+      background: white;
       padding: 2rem;
-      background: #f9f9f9;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 300px;
     }
-    input, button {
-      font-size: 1.2rem;
-      margin: 1rem 0;
+
+    h2 {
+      margin-bottom: 1rem;
     }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    label {
+      background-color: #4f46e5;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 1rem;
+      display: inline-block;
+    }
+
+    .drop-zone {
+      border: 2px dashed #cbd5e0;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      color: #718096;
+    }
+
+    .drop-zone.dragover {
+      border-color: #4f46e5;
+      background: #ebf4ff;
+    }
+
+    progress {
+      width: 100%;
+      margin-top: 1rem;
+    }
+
     #status {
       margin-top: 1rem;
-      color: #444;
+      font-size: 0.9rem;
+      color: #374151;
     }
   </style>
 </head>
 <body>
-  <h2>Upload Your Photo</h2>
-  <input type="file" id="fileInput" accept="image/*" />
-  <button id="uploadBtn">Upload</button>
-  <div id="status"></div>
+  <div class="card">
+    <h2>Upload Your Photo</h2>
+
+    <div id="dropZone" class="drop-zone">Drag & drop photo here</div>
+
+    <label for="fileInput">Choose a photo</label>
+    <input type="file" id="fileInput" accept="image/*" />
+
+    <progress id="progressBar" value="0" max="100" style="display:none;"></progress>
+    <div id="status"></div>
+  </div>
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
-    import { getStorage, ref, uploadBytes } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js';
+    import { getStorage, ref, uploadBytesResumable } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyCCCwPOV2Dh0zZnEWzIdHzAxOJP1kKR6sU",
       authDomain: "svadbafoto-22df5.firebaseapp.com",
       projectId: "svadbafoto-22df5",
-      storageBucket: "svadbafoto-22df5.firebasestorage.app", // ✅ Left untouched as requested
+      storageBucket: "svadbafoto-22df5.firebasestorage.app",
       messagingSenderId: "466308248816",
       appId: "1:466308248816:web:edf8f6920013d3fd227e35",
     };
@@ -45,22 +96,18 @@
     const app = initializeApp(firebaseConfig);
     const storage = getStorage(app);
 
-    document.getElementById('uploadBtn').addEventListener('click', async () => {
-      const fileInput = document.getElementById('fileInput');
-      const status = document.getElementById('status');
-      const file = fileInput.files[0];
+    const fileInput = document.getElementById('fileInput');
+    const dropZone = document.getElementById('dropZone');
+    const status = document.getElementById('status');
+    const progressBar = document.getElementById('progressBar');
 
-      if (!file) {
-        status.textContent = '📂 Please choose a photo first.';
-        return;
-      }
-
+    function validateAndUpload(file) {
       if (!file.type.startsWith('image/')) {
         status.textContent = '❌ Only image files are allowed.';
         return;
       }
 
-      if (file.size > 5 * 1024 * 1024) { // 5MB max
+      if (file.size > 5 * 1024 * 1024) {
         status.textContent = '❌ File too large. Max 5MB.';
         return;
       }
@@ -71,18 +118,54 @@
       }
 
       const fileName = Date.now() + '-' + file.name;
-      const storageRef = ref(storage, 'uploads/' + fileName);
+      const fileRef = ref(storage, 'uploads/' + fileName);
+      const uploadTask = uploadBytesResumable(fileRef, file);
+
+      progressBar.style.display = 'block';
+      progressBar.value = 0;
 
       status.textContent = '⏳ Uploading...';
 
-      try {
-        await uploadBytes(storageRef, file);
-        status.textContent = '✅ Upload successful!';
-        fileInput.value = ''; // Clear input
-      } catch (error) {
-        console.error(error);
-        status.textContent = '❌ Upload failed: ' + error.message;
-      }
+      uploadTask.on('state_changed',
+        (snapshot) => {
+          const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          progressBar.value = percent;
+        },
+        (error) => {
+          console.error(error);
+          status.textContent = '❌ Upload failed: ' + error.message;
+          progressBar.style.display = 'none';
+        },
+        () => {
+          status.textContent = '✅ Upload successful!';
+          progressBar.style.display = 'none';
+          fileInput.value = '';
+        }
+      );
+    }
+
+    document.querySelector('label').addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (file) validateAndUpload(file);
+    });
+
+    // Drag & Drop
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) validateAndUpload(file);
     });
   </script>
 </body>
