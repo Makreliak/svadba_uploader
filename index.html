@@ -3,35 +3,102 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Photo Upload</title>
+  <title>Wedding Photo Upload</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Open+Sans&display=swap');
+
     body {
-      font-family: sans-serif;
+      font-family: 'Open Sans', sans-serif;
+      margin: 0;
+      min-height: 100vh;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
-      padding: 2rem;
-      background: #f9f9f9;
+      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+      background-size: cover;
+      position: relative;
+      color: #fff;
     }
-    input, button {
-      font-size: 1.2rem;
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 0;
+    }
+
+    .container {
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 2rem 3rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      text-align: center;
+      max-width: 400px;
+      width: 90vw;
+      backdrop-filter: blur(8px);
+    }
+
+    h2 {
+      font-family: 'Great Vibes', cursive;
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      color: #fff;
+      text-shadow: 0 0 10px rgba(0,0,0,0.7);
+    }
+
+    input[type="file"] {
+      font-size: 1rem;
       margin: 1rem 0;
+      border-radius: 6px;
+      padding: 0.5rem;
+      width: 100%;
+      box-sizing: border-box;
     }
+
+    button {
+      font-size: 1.2rem;
+      padding: 0.6rem 2rem;
+      border: none;
+      border-radius: 8px;
+      background: #f0a500;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+    }
+    button:hover {
+      background-color: #d18c00;
+    }
+
     #status {
       margin-top: 1rem;
-      color: #444;
-      max-width: 400px;
+      color: #fff;
+      font-weight: 600;
+      min-height: 3rem;
+      text-align: left;
+      max-height: 150px;
+      overflow-y: auto;
     }
-    #status p {
-      margin: 0.3rem 0;
+
+    #qrCode {
+      margin-top: 2rem;
+      max-width: 150px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
   </style>
 </head>
 <body>
-  <h2>Upload Your Photo</h2>
-  <input type="file" id="fileInput" accept="image/*" multiple />
-  <button id="uploadBtn">Upload</button>
-  <div id="status"></div>
+  <div class="container">
+    <h2>Upload Your Wedding Photo</h2>
+    <input type="file" id="fileInput" accept="image/*" multiple />
+    <button id="uploadBtn">Upload</button>
+    <div id="status"></div>
+    <img id="qrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://makreliak.github.io/svadba_uploader/" alt="QR Code to Wedding Upload Page" />
+  </div>
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
@@ -53,7 +120,7 @@
       const fileInput = document.getElementById('fileInput');
       const status = document.getElementById('status');
 
-      status.innerHTML = ''; // Clear previous status messages
+      status.innerHTML = '';
 
       if (!fileInput.files.length) {
         status.textContent = '📂 Please choose at least one photo first.';
