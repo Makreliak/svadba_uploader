@@ -1,202 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Wedding Photo Upload</title>
+  <meta charset="UTF-8">
+  <title>Photo Uploader</title>
   <style>
-    /* your CSS same as before */
-    /* ... (keep all your existing CSS from your previous code) ... */
+    body { font-family: Arial; text-align: center; }
+    .gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+    .gallery img { width: 150px; height: auto; cursor: pointer; border-radius: 8px; }
+    #lightbox {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center;
+      flex-direction: column; z-index: 1000;
+    }
+    #lightbox img { max-width: 80vw; max-height: 80vh; margin-bottom: 20px; border-radius: 8px; }
+    #lightbox button { padding: 10px 20px; margin: 5px; }
+    #closeBtn { position: absolute; top: 10px; right: 20px; font-size: 24px; color: white; cursor: pointer; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Upload Your Wedding Photo</h2>
-    <input type="file" id="fileInput" accept="image/*" multiple />
-    <button id="uploadBtn">Upload</button>
-    <div id="status"></div>
+  <h1>Upload Your Wedding Photos</h1>
+  <input type="file" id="fileInput" multiple accept="image/*" />
+  <div id="status"></div>
+  <div class="gallery" id="gallery"></div>
 
-    <div id="qrLabel" style="font-weight:700; color:#a75d5d; margin-top: 1.2rem; font-size:1.1rem;">
-      Scan QR code to upload photos from your phone:
-    </div>
-    <img id="qrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://makreliak.github.io/svadba_uploader/" alt="QR Code to Wedding Upload Page" />
-
-    <div id="galleryLabel">
-      <span class="arrow">⬇️⬇️</span> Gallery below <span class="arrow">⬇️⬇️</span>
-    </div>
-    <div id="gallery"></div>
+  <!-- Lightbox Modal -->
+  <div id="lightbox">
+    <div id="closeBtn" onclick="closeLightbox()">✖</div>
+    <img id="lightboxImage" src="">
+    <a id="downloadLink" href="#" download>
+      <button>Download Full Image</button>
+    </a>
   </div>
 
-  <div id="lightbox" onclick="closeLightbox(event)">
-    <span id="lightbox-close" title="Close">&times;</span>
-    <img id="lightbox-img" src="" alt="Zoomed thumbnail" />
-    <a id="download-link" href="" target="_blank" rel="noopener noreferrer" download>Download Full Size</a>
-  </div>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/pica@8.0.0/dist/pica.min.js"></script>
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
-    import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js';
+  <!-- Pica for resizing -->
+  <script src="https://unpkg.com/pica@8.0.0/dist/pica.min.js"></script>
 
+  <script>
+    // Firebase config (replace with your own project config)
     const firebaseConfig = {
-      apiKey: "AIzaSyCCCwPOV2Dh0zZnEWzIdHzAxOJP1kKR6sU",
-      authDomain: "svadbafoto-22df5.firebaseapp.com",
-      projectId: "svadbafoto-22df5",
-      storageBucket: "svadbafoto-22df5.firebasestorage.app",
-      messagingSenderId: "466308248816",
-      appId: "1:466308248816:web:edf8f6920013d3fd227e35",
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const storage = getStorage(app);
+    firebase.initializeApp(firebaseConfig);
+    const storage = firebase.storage();
 
-    const uploadBtn = document.getElementById('uploadBtn');
     const fileInput = document.getElementById('fileInput');
-    const status = document.getElementById('status');
     const gallery = document.getElementById('gallery');
+    const statusDiv = document.getElementById('status');
     const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    const downloadLink = document.getElementById('download-link');
-    const lightboxClose = document.getElementById('lightbox-close');
+    const lightboxImage = document.getElementById('lightboxImage');
+    const downloadLink = document.getElementById('downloadLink');
 
-    const pica = window.pica();
-
-    function logStatus(message) {
-      const p = document.createElement('p');
-      p.textContent = message;
-      status.prepend(p);
-    }
-
-    async function uploadFiles(files) {
-      if (!files.length) {
-        alert("Please select some images to upload.");
-        return;
-      }
-
-      uploadBtn.disabled = true;
-      logStatus(`Uploading ${files.length} file(s)...`);
-
+    fileInput.addEventListener('change', async (e) => {
+      const files = e.target.files;
+      statusDiv.innerText = `Uploading ${files.length} file(s)...`;
       for (const file of files) {
         try {
-          // Upload full image to 'uploads/' folder
-          const fullPath = `uploads/${file.name}`;
-          const fullRef = ref(storage, fullPath);
-          await uploadBytes(fullRef, file);
-          logStatus(`Uploaded full image ${file.name}`);
+          const fullRef = storage.ref(`uploads/${file.name}`);
+          await fullRef.put(file);
+          console.log(`Uploaded full image: ${file.name}`);
 
-          // Generate thumbnail blob using pica
-          const thumbBlob = await createThumbnailBlob(file);
-
-          // Upload thumbnail to 'thumbnails/' folder
-          const thumbPath = `thumbnails/${file.name}`;
-          const thumbRef = ref(storage, thumbPath);
-          await uploadBytes(thumbRef, thumbBlob);
-          logStatus(`Uploaded thumbnail ${file.name}`);
-
-          // Add image to gallery
-          addImageToGallery(file.name);
-
-        } catch (error) {
-          logStatus(`Failed to upload ${file.name}: ${error.message}`);
+          const thumbBlob = await createThumbnail(file);
+          const thumbRef = storage.ref(`uploads/${file.name.replace(/\.(\w+)$/, '_thumb.jpg')}`);
+          await thumbRef.put(thumbBlob);
+          console.log(`Uploaded thumbnail: ${file.name}`);
+        } catch (err) {
+          console.error(`Failed to upload ${file.name}`, err);
         }
       }
-
-      uploadBtn.disabled = false;
-      logStatus("Upload complete.");
-    }
-
-    async function createThumbnailBlob(file) {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        const url = URL.createObjectURL(file);
-        img.src = url;
-        img.onload = async () => {
-          URL.revokeObjectURL(url);
-          const canvas = document.createElement('canvas');
-          const aspectRatio = img.width / img.height;
-          canvas.width = 200;
-          canvas.height = Math.round(200 / aspectRatio);
-          try {
-            await pica.resize(img, canvas);
-            canvas.toBlob(blob => {
-              if (blob) {
-                resolve(blob);
-              } else {
-                reject(new Error("Failed to create thumbnail blob"));
-              }
-            }, 'image/jpeg', 0.8);
-          } catch (err) {
-            reject(err);
-          }
-        };
-        img.onerror = () => reject(new Error("Image load error"));
-      });
-    }
-
-    async function addImageToGallery(filename) {
-      try {
-        // Get thumbnail URL for gallery display
-        const thumbRef = ref(storage, `thumbnails/${filename}`);
-        const thumbUrl = await getDownloadURL(thumbRef);
-
-        // Get full image URL for download
-        const fullRef = ref(storage, `uploads/${filename}`);
-        const fullUrl = await getDownloadURL(fullRef);
-
-        const img = document.createElement('img');
-        img.src = thumbUrl;
-        img.alt = filename;
-        img.dataset.fullsize = fullUrl;
-
-        img.onclick = () => {
-          lightboxImg.src = thumbUrl;  // Show bigger thumbnail
-          downloadLink.href = fullUrl;  // Link to full size for download
-          lightbox.style.display = 'flex';
-        };
-
-        gallery.appendChild(img);
-      } catch (error) {
-        console.error('Error adding image to gallery:', error);
-      }
-    }
-
-    function closeLightbox(event) {
-      if (
-        event.target === lightbox || 
-        event.target === lightboxClose
-      ) {
-        lightbox.style.display = 'none';
-        lightboxImg.src = '';
-        downloadLink.href = '';
-      }
-    }
-
-    uploadBtn.addEventListener('click', () => {
-      uploadFiles(fileInput.files);
+      statusDiv.innerText = 'Upload complete.';
+      loadGallery();
     });
 
-    lightboxClose.addEventListener('click', closeLightbox);
-    lightbox.addEventListener('click', closeLightbox);
-
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeLightbox({target: lightbox});
-    });
+    async function createThumbnail(file) {
+      const img = new Image();
+      const bitmap = await createImageBitmap(file);
+      const canvas = document.createElement('canvas');
+      const scale = 150 / bitmap.width;
+      canvas.width = 150;
+      canvas.height = bitmap.height * scale;
+      await pica().resize(bitmap, canvas);
+      return await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.7));
+    }
 
     async function loadGallery() {
       gallery.innerHTML = '';
-      const listRef = ref(storage, 'thumbnails/');
+      const listRef = storage.ref('uploads');
+      const result = await listRef.listAll();
 
-      try {
-        const res = await listAll(listRef);
-        for (const itemRef of res.items) {
-          addImageToGallery(itemRef.name);
-        }
-      } catch (error) {
-        logStatus('Failed to load gallery: ' + error.message);
+      const thumbnails = result.items.filter(item => item.name.includes('_thumb'));
+
+      for (const thumbRef of thumbnails) {
+        const thumbURL = await thumbRef.getDownloadURL();
+        const fullImageName = thumbRef.name.replace('_thumb.jpg', '');
+        const fullRef = storage.ref(`uploads/${fullImageName}`);
+        const fullURL = await fullRef.getDownloadURL();
+
+        const img = document.createElement('img');
+        img.src = thumbURL;
+        img.alt = fullImageName;
+        img.onclick = () => openLightbox(thumbURL, fullURL);
+        gallery.appendChild(img);
       }
     }
 
-    // Initial gallery load
+    function openLightbox(thumbUrl, fullUrl) {
+      lightboxImage.src = thumbUrl;
+      downloadLink.href = fullUrl;
+      lightbox.style.display = 'flex';
+    }
+
+    function closeLightbox() {
+      lightbox.style.display = 'none';
+    }
+
     loadGallery();
   </script>
 </body>
