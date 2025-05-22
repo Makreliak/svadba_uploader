@@ -96,24 +96,25 @@
     }
 
     #gallery {
-      margin-top: 2rem;
+      margin-top: 1.5rem;
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
       justify-content: center;
+      gap: 8px;
     }
 
     #gallery img {
-      width: 120px;
-      height: auto;
+      max-width: 100px;
+      max-height: 75px;
       border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 8px rgba(181, 140, 138, 0.4);
+      object-fit: cover;
       cursor: pointer;
       transition: transform 0.2s ease;
     }
     #gallery img:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transform: scale(1.1);
+      box-shadow: 0 4px 16px rgba(167, 93, 93, 0.6);
     }
 
     #qrCode {
@@ -152,9 +153,33 @@
     const storage = getStorage(app);
     const pica = window.pica();
 
+    const status = document.getElementById('status');
+    const gallery = document.getElementById('gallery');
+
+    async function loadGallery() {
+      gallery.innerHTML = '';
+      try {
+        const listRef = ref(storage, 'uploads/thumbnails/');
+        const res = await listAll(listRef);
+        if(res.items.length === 0) {
+          gallery.innerHTML = '<p>No photos uploaded yet.</p>';
+          return;
+        }
+        for (const itemRef of res.items) {
+          const url = await getDownloadURL(itemRef);
+          const img = document.createElement('img');
+          img.src = url;
+          img.alt = 'Uploaded thumbnail';
+          gallery.appendChild(img);
+        }
+      } catch (error) {
+        console.error('Error loading gallery:', error);
+        gallery.innerHTML = '<p>Error loading gallery.</p>';
+      }
+    }
+
     document.getElementById('uploadBtn').addEventListener('click', async () => {
       const fileInput = document.getElementById('fileInput');
-      const status = document.getElementById('status');
       status.innerHTML = '';
 
       if (!fileInput.files.length) {
@@ -201,40 +226,15 @@
           status.innerHTML += `<p>❌ Upload failed for <strong>${file.name}</strong>: ${error.message}</p>`;
         }
       }
+
+      // Clear detailed logs and show success message after all uploads
+      status.innerHTML = `<p style="font-size:1.2rem; font-weight:700; color:green;">✅ Successfully uploaded</p>`;
+
       await loadGallery();
     });
 
-    async function loadGallery() {
-      const gallery = document.getElementById('gallery');
-      gallery.innerHTML = '<p>Loading gallery...</p>';
-
-      try {
-        const listRef = ref(storage, 'uploads/thumbnails/');
-        const res = await listAll(listRef);
-
-        if (res.items.length === 0) {
-          gallery.innerHTML = '<p>No photos uploaded yet.</p>';
-          return;
-        }
-
-        gallery.innerHTML = ''; // Clear loading message
-
-        for (const itemRef of res.items) {
-          const url = await getDownloadURL(itemRef);
-          const img = document.createElement('img');
-          img.src = url;
-          img.alt = 'Wedding photo thumbnail';
-          img.addEventListener('click', () => window.open(url.replace('thumbnails', 'originals'), '_blank'));
-          gallery.appendChild(img);
-        }
-      } catch (error) {
-        gallery.innerHTML = `<p>Error loading gallery: ${error.message}</p>`;
-      }
-    }
-
     // Load gallery on page load
     loadGallery();
-
   </script>
 </body>
 </html>
