@@ -2,87 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Photo Upload</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: sans-serif;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      height: 100vh;
-      background: linear-gradient(135deg, #f3f4f6, #e2e8f0);
-      margin: 0;
-    }
-
-    .card {
-      background: white;
       padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      width: 300px;
+      background: #f9f9f9;
     }
-
-    h2 {
-      margin-bottom: 1rem;
+    input, button {
+      font-size: 1.2rem;
+      margin: 1rem 0;
     }
-
-    input[type="file"] {
-      display: none;
-    }
-
-    label {
-      background-color: #4f46e5;
-      color: white;
-      padding: 0.6rem 1.2rem;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-bottom: 1rem;
-      display: inline-block;
-    }
-
-    .drop-zone {
-      border: 2px dashed #cbd5e0;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-      color: #718096;
-    }
-
-    .drop-zone.dragover {
-      border-color: #4f46e5;
-      background: #ebf4ff;
-    }
-
-    progress {
-      width: 100%;
-      margin-top: 1rem;
-    }
-
     #status {
       margin-top: 1rem;
-      font-size: 0.9rem;
-      color: #374151;
+      color: #444;
+      max-width: 400px;
+    }
+    #status p {
+      margin: 0.3rem 0;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h2>Upload Your Photo</h2>
-
-    <div id="dropZone" class="drop-zone">Drag & drop photo here</div>
-
-    <label for="fileInput">Choose a photo</label>
-    <input type="file" id="fileInput" accept="image/*" />
-
-    <progress id="progressBar" value="0" max="100" style="display:none;"></progress>
-    <div id="status"></div>
-  </div>
+  <h2>Upload Your Photo</h2>
+  <input type="file" id="fileInput" accept="image/*" multiple />
+  <button id="uploadBtn">Upload</button>
+  <div id="status"></div>
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
-    import { getStorage, ref, uploadBytesResumable } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js';
+    import { getStorage, ref, uploadBytes } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyCCCwPOV2Dh0zZnEWzIdHzAxOJP1kKR6sU",
@@ -96,76 +49,43 @@
     const app = initializeApp(firebaseConfig);
     const storage = getStorage(app);
 
-    const fileInput = document.getElementById('fileInput');
-    const dropZone = document.getElementById('dropZone');
-    const status = document.getElementById('status');
-    const progressBar = document.getElementById('progressBar');
+    document.getElementById('uploadBtn').addEventListener('click', async () => {
+      const fileInput = document.getElementById('fileInput');
+      const status = document.getElementById('status');
 
-    function validateAndUpload(file) {
-      if (!file.type.startsWith('image/')) {
-        status.textContent = '❌ Only image files are allowed.';
+      status.innerHTML = ''; // Clear previous status messages
+
+      if (!fileInput.files.length) {
+        status.textContent = '📂 Please choose at least one photo first.';
         return;
       }
 
-      if (file.size > 5 * 1024 * 1024) {
-        status.textContent = '❌ File too large. Max 5MB.';
-        return;
-      }
+      const files = fileInput.files;
 
-      if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
-        status.textContent = "⚠️ HEIC images are not supported. Please upload JPG or PNG.";
-        return;
-      }
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
 
-      const fileName = Date.now() + '-' + file.name;
-      const fileRef = ref(storage, 'uploads/' + fileName);
-      const uploadTask = uploadBytesResumable(fileRef, file);
-
-      progressBar.style.display = 'block';
-      progressBar.value = 0;
-
-      status.textContent = '⏳ Uploading...';
-
-      uploadTask.on('state_changed',
-        (snapshot) => {
-          const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          progressBar.value = percent;
-        },
-        (error) => {
-          console.error(error);
-          status.textContent = '❌ Upload failed: ' + error.message;
-          progressBar.style.display = 'none';
-        },
-        () => {
-          status.textContent = '✅ Upload successful!';
-          progressBar.style.display = 'none';
-          fileInput.value = '';
+        if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
+          status.innerHTML += `<p>⚠️ File <strong>${file.name}</strong> is HEIC and not supported.</p>`;
+          continue;
         }
-      );
-    }
 
-    document.querySelector('label').addEventListener('click', () => fileInput.click());
+        if (file.size > 5 * 1024 * 1024) {
+          status.innerHTML += `<p>⚠️ File <strong>${file.name}</strong> is larger than 5MB.</p>`;
+          continue;
+        }
 
-    fileInput.addEventListener('change', () => {
-      const file = fileInput.files[0];
-      if (file) validateAndUpload(file);
-    });
+        const fileName = Date.now() + '-' + file.name;
+        const storageRef = ref(storage, 'uploads/' + fileName);
 
-    // Drag & Drop
-    dropZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      dropZone.classList.add('dragover');
-    });
-
-    dropZone.addEventListener('dragleave', () => {
-      dropZone.classList.remove('dragover');
-    });
-
-    dropZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropZone.classList.remove('dragover');
-      const file = e.dataTransfer.files[0];
-      if (file) validateAndUpload(file);
+        try {
+          status.innerHTML += `<p>⏳ Uploading <strong>${file.name}</strong>...</p>`;
+          await uploadBytes(storageRef, file);
+          status.innerHTML += `<p>✅ Uploaded <strong>${file.name}</strong> successfully!</p>`;
+        } catch (error) {
+          status.innerHTML += `<p>❌ Upload failed for <strong>${file.name}</strong>: ${error.message}</p>`;
+        }
+      }
     });
   </script>
 </body>
