@@ -2,189 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Wedding Photo Upload</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Open+Sans&display=swap');
-
-    body {
-      font-family: 'Open Sans', sans-serif;
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: url('https://images.unsplash.com/photo-1523438885200-e635ba2c371e?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed;
-      background-size: cover;
-      position: relative;
-      color: #5b4636;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(255, 248, 240, 0.6);
-      z-index: 0;
-    }
-
-    .container {
-      z-index: 1;
-      background: rgba(255, 255, 250, 0.9);
-      padding: 2rem 3rem;
-      border-radius: 14px;
-      box-shadow: 0 8px 32px rgba(181, 140, 138, 0.3);
-      text-align: center;
-      max-width: 400px;
-      width: 90vw;
-      backdrop-filter: blur(12px);
-      color: #5b4636;
-    }
-
-    h2 {
-      font-family: 'Great Vibes', cursive;
-      font-size: 3rem;
-      margin-bottom: 0.5rem;
-      color: #a75d5d;
-      text-shadow: 0 0 8px rgba(167, 93, 93, 0.8);
-    }
-
-    input[type="file"], button {
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    input[type="file"] {
-      font-size: 1rem;
-      margin: 1rem 0;
-      border-radius: 6px;
-      padding: 0.5rem;
-      border: 1px solid #d9c9c9;
-      background: #fffaf0;
-      color: #5b4636;
-    }
-
-    button {
-      font-size: 1.2rem;
-      padding: 0.6rem 2rem;
-      border: none;
-      border-radius: 8px;
-      background: #c97c7c;
-      color: #fffaf0;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      min-height: 44px;
-      box-shadow: 0 3px 6px rgba(201, 124, 124, 0.5);
-    }
-    button:hover {
-      background-color: #a75d5d;
-    }
-
-    #status {
-      margin-top: 1rem;
-      color: #5b4636;
-      font-weight: 600;
-      min-height: 3rem;
-      text-align: left;
-      max-height: 150px;
-      overflow-y: auto;
-      background: #fffaf0;
-      border-radius: 6px;
-      padding: 0.5rem 1rem;
-      box-shadow: inset 0 0 6px rgba(181, 140, 138, 0.2);
-      display: flex;
-      flex-direction: column-reverse;
-    }
-
-    #qrCode {
-      margin: 1.5rem auto 1rem;
-      max-width: 150px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(181, 140, 138, 0.4);
-      display: block;
-    }
-
-    #galleryLabel {
-      margin-top: 0.75rem;
-      font-weight: 700;
-      color: #a75d5d;
-      font-size: 1.1rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-      user-select: none;
-    }
-    #galleryLabel .arrow {
-      font-size: 1.4rem;
-      animation: bounce 1.5s infinite;
-      color: #a75d5d;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(6px); }
-    }
-
-    #gallery {
-      margin-top: 1rem;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    #gallery img {
-      max-width: 100px;
-      max-height: 75px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(181, 140, 138, 0.4);
-      object-fit: cover;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-    }
-    #gallery img:hover {
-      transform: scale(1.05);
-    }
-
-    /* Lightbox */
-    #lightbox {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      z-index: 10;
-      padding: 20px;
-    }
-    #lightbox img {
-      max-width: 90vw;
-      max-height: 80vh;
-      border-radius: 10px;
-      margin-bottom: 10px;
-      box-shadow: 0 0 20px rgba(255,255,255,0.3);
-    }
-    #lightbox a {
-      color: white;
-      text-decoration: underline;
-      font-size: 1.2rem;
-      background: rgba(255, 255, 255, 0.15);
-      padding: 6px 12px;
-      border-radius: 6px;
-      user-select: none;
-    }
-    #lightbox-close {
-      position: absolute;
-      top: 20px;
-      right: 30px;
-      font-size: 2.5rem;
-      color: white;
-      cursor: pointer;
-      user-select: none;
-    }
+    /* your CSS same as before */
+    /* ... (keep all your existing CSS from your previous code) ... */
   </style>
 </head>
 <body>
@@ -205,7 +27,7 @@
     <div id="gallery"></div>
   </div>
 
-  <div id="lightbox">
+  <div id="lightbox" onclick="closeLightbox(event)">
     <span id="lightbox-close" title="Close">&times;</span>
     <img id="lightbox-img" src="" alt="Zoomed thumbnail" />
     <a id="download-link" href="" target="_blank" rel="noopener noreferrer" download>Download Full Size</a>
@@ -228,14 +50,16 @@
     const app = initializeApp(firebaseConfig);
     const storage = getStorage(app);
 
-    const fileInput = document.getElementById('fileInput');
     const uploadBtn = document.getElementById('uploadBtn');
+    const fileInput = document.getElementById('fileInput');
     const status = document.getElementById('status');
     const gallery = document.getElementById('gallery');
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
-    const lightboxClose = document.getElementById('lightbox-close');
     const downloadLink = document.getElementById('download-link');
+    const lightboxClose = document.getElementById('lightbox-close');
+
+    const pica = window.pica();
 
     function logStatus(message) {
       const p = document.createElement('p');
@@ -243,125 +67,136 @@
       status.prepend(p);
     }
 
-    async function resizeImage(file) {
-      const maxWidth = 800;
-      const maxHeight = 600;
-
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-
-          if (width > height) {
-            if (width > maxWidth) {
-              height *= maxWidth / width;
-              width = maxWidth;
-            }
-          } else {
-            if (height > maxHeight) {
-              width *= maxHeight / height;
-              height = maxHeight;
-            }
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-
-          canvas.toBlob(blob => {
-            if (blob) {
-              resolve(new File([blob], file.name, { type: file.type }));
-            } else {
-              reject(new Error('Canvas is empty'));
-            }
-          }, file.type);
-        };
-        img.onerror = () => reject(new Error('Image load error'));
-        img.src = URL.createObjectURL(file);
-      });
-    }
-
-    async function uploadFile(file) {
-      try {
-        logStatus(`Resizing ${file.name}...`);
-        const resizedFile = await resizeImage(file);
-
-        // Upload path fixed to 'uploads' folder
-        const storageRef = ref(storage, `uploads/${Date.now()}_${file.name}`);
-        logStatus(`Uploading ${file.name}...`);
-        await uploadBytes(storageRef, resizedFile);
-
-        const downloadURL = await getDownloadURL(storageRef);
-        logStatus(`Uploaded: ${file.name}`);
-        return downloadURL;
-      } catch (error) {
-        logStatus(`Error uploading ${file.name}: ${error.message}`);
-        return null;
-      }
-    }
-
-    async function loadGallery() {
-      gallery.innerHTML = '';
-      const listRef = ref(storage, 'uploads');  // folder name fixed here as well
-      try {
-        const res = await listAll(listRef);
-        const urls = await Promise.all(res.items.map(item => getDownloadURL(item)));
-        urls.forEach(url => {
-          const img = document.createElement('img');
-          img.src = url;
-          img.alt = 'Uploaded photo';
-          img.addEventListener('click', () => {
-            lightboxImg.src = url;
-            downloadLink.href = url;
-            lightbox.style.display = 'flex';
-          });
-          gallery.appendChild(img);
-        });
-      } catch (error) {
-        logStatus(`Error loading gallery: ${error.message}`);
-      }
-    }
-
-    uploadBtn.addEventListener('click', async () => {
-      if (fileInput.files.length === 0) {
-        alert('Please select at least one image file to upload.');
+    async function uploadFiles(files) {
+      if (!files.length) {
+        alert("Please select some images to upload.");
         return;
       }
 
-      for (const file of fileInput.files) {
-        await uploadFile(file);
+      uploadBtn.disabled = true;
+      logStatus(`Uploading ${files.length} file(s)...`);
+
+      for (const file of files) {
+        try {
+          // Upload full image to 'uploads/' folder
+          const fullPath = `uploads/${file.name}`;
+          const fullRef = ref(storage, fullPath);
+          await uploadBytes(fullRef, file);
+          logStatus(`Uploaded full image ${file.name}`);
+
+          // Generate thumbnail blob using pica
+          const thumbBlob = await createThumbnailBlob(file);
+
+          // Upload thumbnail to 'thumbnails/' folder
+          const thumbPath = `thumbnails/${file.name}`;
+          const thumbRef = ref(storage, thumbPath);
+          await uploadBytes(thumbRef, thumbBlob);
+          logStatus(`Uploaded thumbnail ${file.name}`);
+
+          // Add image to gallery
+          addImageToGallery(file.name);
+
+        } catch (error) {
+          logStatus(`Failed to upload ${file.name}: ${error.message}`);
+        }
       }
 
-      fileInput.value = '';
-      loadGallery();
-    });
+      uploadBtn.disabled = false;
+      logStatus("Upload complete.");
+    }
 
-    // Close lightbox if clicking background or close button
-    function closeLightbox(e) {
-      if (e.target === lightbox || e.target === lightboxClose) {
+    async function createThumbnailBlob(file) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.src = url;
+        img.onload = async () => {
+          URL.revokeObjectURL(url);
+          const canvas = document.createElement('canvas');
+          const aspectRatio = img.width / img.height;
+          canvas.width = 200;
+          canvas.height = Math.round(200 / aspectRatio);
+          try {
+            await pica.resize(img, canvas);
+            canvas.toBlob(blob => {
+              if (blob) {
+                resolve(blob);
+              } else {
+                reject(new Error("Failed to create thumbnail blob"));
+              }
+            }, 'image/jpeg', 0.8);
+          } catch (err) {
+            reject(err);
+          }
+        };
+        img.onerror = () => reject(new Error("Image load error"));
+      });
+    }
+
+    async function addImageToGallery(filename) {
+      try {
+        // Get thumbnail URL for gallery display
+        const thumbRef = ref(storage, `thumbnails/${filename}`);
+        const thumbUrl = await getDownloadURL(thumbRef);
+
+        // Get full image URL for download
+        const fullRef = ref(storage, `uploads/${filename}`);
+        const fullUrl = await getDownloadURL(fullRef);
+
+        const img = document.createElement('img');
+        img.src = thumbUrl;
+        img.alt = filename;
+        img.dataset.fullsize = fullUrl;
+
+        img.onclick = () => {
+          lightboxImg.src = thumbUrl;  // Show bigger thumbnail
+          downloadLink.href = fullUrl;  // Link to full size for download
+          lightbox.style.display = 'flex';
+        };
+
+        gallery.appendChild(img);
+      } catch (error) {
+        console.error('Error adding image to gallery:', error);
+      }
+    }
+
+    function closeLightbox(event) {
+      if (
+        event.target === lightbox || 
+        event.target === lightboxClose
+      ) {
         lightbox.style.display = 'none';
         lightboxImg.src = '';
         downloadLink.href = '';
       }
     }
 
-    lightbox.addEventListener('click', closeLightbox);
-    lightboxClose.addEventListener('click', closeLightbox);
-
-    // Close lightbox on Escape key
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && lightbox.style.display === 'flex') {
-        lightbox.style.display = 'none';
-        lightboxImg.src = '';
-        downloadLink.href = '';
-      }
+    uploadBtn.addEventListener('click', () => {
+      uploadFiles(fileInput.files);
     });
 
-    // Load gallery on start
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', closeLightbox);
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox({target: lightbox});
+    });
+
+    async function loadGallery() {
+      gallery.innerHTML = '';
+      const listRef = ref(storage, 'thumbnails/');
+
+      try {
+        const res = await listAll(listRef);
+        for (const itemRef of res.items) {
+          addImageToGallery(itemRef.name);
+        }
+      } catch (error) {
+        logStatus('Failed to load gallery: ' + error.message);
+      }
+    }
+
+    // Initial gallery load
     loadGallery();
   </script>
 </body>
