@@ -118,8 +118,21 @@
     box-shadow: 0 4px 16px rgba(167, 93, 93, 0.6);
   }
 
-  #qrCode {
+  #qrInfo {
     margin-top: 2rem;
+    font-size: 1rem;
+    color: #7a5a5a;
+    font-weight: 600;
+    font-style: italic;
+    text-align: center;
+    max-width: 280px;
+    margin-left: auto;
+    margin-right: auto;
+    user-select: none;
+  }
+
+  #qrCode {
+    margin-top: 0.5rem;
     max-width: 150px;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(181, 140, 138, 0.4);
@@ -186,6 +199,8 @@
     <button id="uploadBtn">Upload</button>
     <div id="status"></div>
     <div id="gallery"></div>
+    
+    <p id="qrInfo">Share this QR code with a friend so they can easily access the link too!</p>
     <img id="qrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://makreliak.github.io/svadba_uploader/" alt="QR Code to Wedding Upload Page" />
   </div>
 
