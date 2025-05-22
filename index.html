@@ -37,7 +37,7 @@
       apiKey: "AIzaSyCCCwPOV2Dh0zZnEWzIdHzAxOJP1kKR6sU",
       authDomain: "svadbafoto-22df5.firebaseapp.com",
       projectId: "svadbafoto-22df5",
-      storageBucket: "svadbafoto-22df5.firebasestorage.app",
+      storageBucket: "svadbafoto-22df5.firebasestorage.app", // ✅ Left untouched as requested
       messagingSenderId: "466308248816",
       appId: "1:466308248816:web:edf8f6920013d3fd227e35",
     };
@@ -48,16 +48,25 @@
     document.getElementById('uploadBtn').addEventListener('click', async () => {
       const fileInput = document.getElementById('fileInput');
       const status = document.getElementById('status');
+      const file = fileInput.files[0];
 
-      if (!fileInput.files.length) {
+      if (!file) {
         status.textContent = '📂 Please choose a photo first.';
         return;
       }
 
-      const file = fileInput.files[0];
+      if (!file.type.startsWith('image/')) {
+        status.textContent = '❌ Only image files are allowed.';
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) { // 5MB max
+        status.textContent = '❌ File too large. Max 5MB.';
+        return;
+      }
 
       if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
-        status.textContent = "⚠️ HEIC images are not supported. Please select a JPG or PNG.";
+        status.textContent = "⚠️ HEIC images are not supported. Please upload JPG or PNG.";
         return;
       }
 
@@ -65,9 +74,11 @@
       const storageRef = ref(storage, 'uploads/' + fileName);
 
       status.textContent = '⏳ Uploading...';
+
       try {
         await uploadBytes(storageRef, file);
         status.textContent = '✅ Upload successful!';
+        fileInput.value = ''; // Clear input
       } catch (error) {
         console.error(error);
         status.textContent = '❌ Upload failed: ' + error.message;
