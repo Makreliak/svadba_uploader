@@ -164,7 +164,7 @@
 
           const img = new Image();
           img.src = URL.createObjectURL(file);
-          await new Promise(resolve => img.onload = resolve);
+          await img.decode(); // ensure image is ready for pica
 
           const canvas = document.createElement('canvas');
           canvas.width = 300;
