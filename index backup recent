@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Photo Upload</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      background: #f9f9f9;
+    }
+    input, button {
+      font-size: 1.2rem;
+      margin: 1rem 0;
+    }
+    #status {
+      margin-top: 1rem;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+  <h2>Upload Your Photo</h2>
+  <input type="file" id="fileInput" accept="image/*" />
+  <button id="uploadBtn">Upload</button>
+  <div id="status"></div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
+    import { getStorage, ref, uploadBytes } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCCCwPOV2Dh0zZnEWzIdHzAxOJP1kKR6sU",
+      authDomain: "svadbafoto-22df5.firebaseapp.com",
+      projectId: "svadbafoto-22df5",
+      storageBucket: "svadbafoto-22df5.firebasestorage.app", // ✅ Left untouched as requested
+      messagingSenderId: "466308248816",
+      appId: "1:466308248816:web:edf8f6920013d3fd227e35",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const storage = getStorage(app);
+
+    document.getElementById('uploadBtn').addEventListener('click', async () => {
+      const fileInput = document.getElementById('fileInput');
+      const status = document.getElementById('status');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        status.textContent = '📂 Please choose a photo first.';
+        return;
+      }
+
+      if (!file.type.startsWith('image/')) {
+        status.textContent = '❌ Only image files are allowed.';
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) { // 5MB max
+        status.textContent = '❌ File too large. Max 5MB.';
+        return;
+      }
+
+      if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
+        status.textContent = "⚠️ HEIC images are not supported. Please upload JPG or PNG.";
+        return;
+      }
+
+      const fileName = Date.now() + '-' + file.name;
+      const storageRef = ref(storage, 'uploads/' + fileName);
+
+      status.textContent = '⏳ Uploading...';
+
+      try {
+        await uploadBytes(storageRef, file);
+        status.textContent = '✅ Upload successful!';
+        fileInput.value = ''; // Clear input
+      } catch (error) {
+        console.error(error);
+        status.textContent = '❌ Upload failed: ' + error.message;
+      }
+    });
+  </script>
+</body>
+</html>
