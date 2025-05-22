@@ -228,17 +228,14 @@
     const app = initializeApp(firebaseConfig);
     const storage = getStorage(app);
 
-    const uploadBtn = document.getElementById('uploadBtn');
     const fileInput = document.getElementById('fileInput');
+    const uploadBtn = document.getElementById('uploadBtn');
     const status = document.getElementById('status');
     const gallery = document.getElementById('gallery');
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
-    const downloadLink = document.getElementById('download-link');
     const lightboxClose = document.getElementById('lightbox-close');
-
-    // pica instance for resizing thumbnails (currently unused, thumbnails can be local)
-    const pica = window.pica();
+    const downloadLink = document.getElementById('download-link');
 
     function logStatus(message) {
       const p = document.createElement('p');
@@ -246,73 +243,103 @@
       status.prepend(p);
     }
 
-    async function uploadFiles(files) {
-      if (!files.length) {
-        alert("Please select some images to upload.");
-        return;
-      }
+    async function resizeImage(file) {
+      const maxWidth = 800;
+      const maxHeight = 600;
 
-      uploadBtn.disabled = true;
-      logStatus(`Uploading ${files.length} file(s)...`);
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
 
-      for (const file of files) {
-        try {
-          // Upload to uploads/originals/
-          const fullPath = `uploads/originals/${file.name}`;
-          const storageRef = ref(storage, fullPath);
+          if (width > height) {
+            if (width > maxWidth) {
+              height *= maxWidth / width;
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width *= maxHeight / height;
+              height = maxHeight;
+            }
+          }
 
-          await uploadBytes(storageRef, file);
-          logStatus(`Uploaded ${file.name}`);
+          canvas.width = width;
+          canvas.height = height;
 
-          // Add image to gallery after upload
-          addImageToGallery(file.name);
-        } catch (error) {
-          logStatus(`Failed to upload ${file.name}: ${error.message}`);
-        }
-      }
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
 
-      uploadBtn.disabled = false;
-      logStatus("Upload complete.");
+          canvas.toBlob(blob => {
+            if (blob) {
+              resolve(new File([blob], file.name, { type: file.type }));
+            } else {
+              reject(new Error('Canvas is empty'));
+            }
+          }, file.type);
+        };
+        img.onerror = () => reject(new Error('Image load error'));
+        img.src = URL.createObjectURL(file);
+      });
     }
 
-    async function addImageToGallery(filename) {
+    async function uploadFile(file) {
       try {
-        // Get the download URL from uploads/originals/
-        const fullRef = ref(storage, `uploads/originals/${filename}`);
-        const fullUrl = await getDownloadURL(fullRef);
+        logStatus(`Resizing ${file.name}...`);
+        const resizedFile = await resizeImage(file);
 
-        // For now, use full image as thumbnail
-        const img = document.createElement('img');
-        img.src = fullUrl;
-        img.alt = filename;
-        img.dataset.fullsize = fullUrl;
+        const storageRef = ref(storage, `wedding_photos/${Date.now()}_${file.name}`);
+        logStatus(`Uploading ${file.name}...`);
+        await uploadBytes(storageRef, resizedFile);
 
-        img.onclick = () => {
-          lightboxImg.src = img.src; // Zoom image
-          downloadLink.href = img.dataset.fullsize; // Full image download link
-          lightbox.style.display = 'flex';
-        };
-
-        gallery.appendChild(img);
+        const downloadURL = await getDownloadURL(storageRef);
+        logStatus(`Uploaded: ${file.name}`);
+        return downloadURL;
       } catch (error) {
-        console.error('Error adding image to gallery:', error);
+        logStatus(`Error uploading ${file.name}: ${error.message}`);
+        return null;
       }
     }
 
     async function loadGallery() {
       gallery.innerHTML = '';
-      const listRef = ref(storage, 'uploads/originals/');
-
+      const listRef = ref(storage, 'wedding_photos');
       try {
         const res = await listAll(listRef);
-        for (const itemRef of res.items) {
-          addImageToGallery(itemRef.name);
-        }
+        const urls = await Promise.all(res.items.map(item => getDownloadURL(item)));
+        urls.forEach(url => {
+          const img = document.createElement('img');
+          img.src = url;
+          img.alt = 'Uploaded photo';
+          img.addEventListener('click', () => {
+            lightboxImg.src = url;
+            downloadLink.href = url;
+            lightbox.style.display = 'flex';
+          });
+          gallery.appendChild(img);
+        });
       } catch (error) {
-        logStatus('Failed to load gallery: ' + error.message);
+        logStatus(`Error loading gallery: ${error.message}`);
       }
     }
 
+    uploadBtn.addEventListener('click', async () => {
+      if (fileInput.files.length === 0) {
+        alert('Please select at least one image file to upload.');
+        return;
+      }
+
+      for (const file of fileInput.files) {
+        await uploadFile(file);
+      }
+
+      fileInput.value = '';
+      loadGallery();
+    });
+
+    // Close lightbox if clicking background or close button
     function closeLightbox(e) {
       if (e.target === lightbox || e.target === lightboxClose) {
         lightbox.style.display = 'none';
@@ -321,16 +348,20 @@
       }
     }
 
-    uploadBtn.addEventListener('click', () => {
-      const files = fileInput.files;
-      uploadFiles(files);
-    });
-
-    window.onload = loadGallery;
-
     lightbox.addEventListener('click', closeLightbox);
     lightboxClose.addEventListener('click', closeLightbox);
 
+    // Close lightbox on Escape key
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightbox.style.display === 'flex') {
+        lightbox.style.display = 'none';
+        lightboxImg.src = '';
+        downloadLink.href = '';
+      }
+    });
+
+    // Load gallery on start
+    loadGallery();
   </script>
 </body>
 </html>
