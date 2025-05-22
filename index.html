@@ -2,16 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Photo Upload & Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Photo Upload</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      max-width: 700px;
-      margin: 2rem auto;
-      padding: 1rem;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
       background: #f9f9f9;
-      text-align: center;
     }
     input, button {
       font-size: 1.2rem;
@@ -19,45 +19,20 @@
     }
     #status {
       margin-top: 1rem;
-      color: #333;
-      min-height: 1.5em;
-    }
-    #gallery {
-      margin-top: 2rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      justify-content: center;
-    }
-    #gallery img {
-      width: 120px;
-      height: 120px;
-      object-fit: cover;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      cursor: pointer;
-      transition: transform 0.2s ease;
-    }
-    #gallery img:hover {
-      transform: scale(1.05);
+      color: #444;
     }
   </style>
 </head>
 <body>
-  <h1>Upload Your Photo</h1>
+  <h2>Upload Your Photo</h2>
   <input type="file" id="fileInput" accept="image/*" />
-  <br />
   <button id="uploadBtn">Upload</button>
   <div id="status"></div>
 
-  <h2>Uploaded Photos</h2>
-  <div id="gallery">Loading photos…</div>
-
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
-    import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js';
+    import { getStorage, ref, uploadBytes } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js';
 
-    // Your Firebase config - replace with your actual keys!
     const firebaseConfig = {
       apiKey: "AIzaSyCCCwPOV2Dh0zZnEWzIdHzAxOJP1kKR6sU",
       authDomain: "svadbafoto-22df5.firebaseapp.com",
@@ -70,7 +45,6 @@
     const app = initializeApp(firebaseConfig);
     const storage = getStorage(app);
 
-    // Upload button event
     document.getElementById('uploadBtn').addEventListener('click', async () => {
       const fileInput = document.getElementById('fileInput');
       const status = document.getElementById('status');
@@ -81,6 +55,7 @@
       }
 
       const file = fileInput.files[0];
+
       if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
         status.textContent = "⚠️ HEIC images are not supported. Please select a JPG or PNG.";
         return;
@@ -93,47 +68,11 @@
       try {
         await uploadBytes(storageRef, file);
         status.textContent = '✅ Upload successful!';
-        fileInput.value = '';
-        loadGallery();  // Refresh gallery after upload
       } catch (error) {
         console.error(error);
         status.textContent = '❌ Upload failed: ' + error.message;
       }
     });
-
-    // Load gallery images
-    async function loadGallery() {
-      const galleryDiv = document.getElementById('gallery');
-      galleryDiv.textContent = '🔄 Loading photos...';
-
-      const listRef = ref(storage, 'uploads');
-      try {
-        const res = await listAll(listRef);
-        galleryDiv.innerHTML = ''; // clear loading message
-
-        if (res.items.length === 0) {
-          galleryDiv.textContent = 'No photos uploaded yet.';
-          return;
-        }
-
-        // Show newest first
-        for (const itemRef of res.items.reverse()) {
-          const url = await getDownloadURL(itemRef);
-          const img = document.createElement('img');
-          img.src = url;
-          img.alt = 'Uploaded photo';
-          img.loading = 'lazy';
-          galleryDiv.appendChild(img);
-        }
-      } catch (error) {
-        console.error('Gallery load failed:', error);
-        galleryDiv.textContent = '⚠️ Failed to load gallery.';
-      }
-    }
-
-    // Load gallery on page load
-    loadGallery();
   </script>
 </body>
 </html>
-
