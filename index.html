@@ -1,287 +1,353 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wedding Photo Upload</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Open+Sans&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wedding Photo Upload</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Open+Sans&display=swap');
 
-    body {
-      font-family: 'Open Sans', sans-serif;
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: url('https://images.unsplash.com/photo-1523438885200-e635ba2c371e?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed;
-      background-size: cover;
-      position: relative;
-      color: #5b4636;
-    }
+    body {
+      font-family: 'Open Sans', sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: url('https://images.unsplash.com/photo-1523438885200-e635ba2c371e?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed;
+      background-size: cover;
+      position: relative;
+      color: #5b4636;
+    }
 
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(255, 248, 240, 0.6);
-      z-index: 0;
-    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(255, 248, 240, 0.6);
+      z-index: 0;
+    }
 
-    .container {
-      z-index: 1;
-      background: rgba(255, 255, 250, 0.9);
-      padding: 2rem 3rem;
-      border-radius: 14px;
-      box-shadow: 0 8px 32px rgba(181, 140, 138, 0.3);
-      text-align: center;
-      max-width: 400px;
-      width: 90vw;
-      backdrop-filter: blur(12px);
-      color: #5b4636;
-    }
+    .container {
+      z-index: 1;
+      background: rgba(255, 255, 250, 0.9);
+      padding: 2rem 3rem;
+      border-radius: 14px;
+      box-shadow: 0 8px 32px rgba(181, 140, 138, 0.3);
+      text-align: center;
+      max-width: 400px;
+      width: 90vw;
+      backdrop-filter: blur(12px);
+      color: #5b4636;
+    }
 
-    h2 {
-      font-family: 'Great Vibes', cursive;
-      font-size: 3rem;
-      margin-bottom: 0.5rem;
-      color: #a75d5d;
-      text-shadow: 0 0 8px rgba(167, 93, 93, 0.8);
-    }
+    h2 {
+      font-family: 'Great Vibes', cursive;
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      color: #a75d5d;
+      text-shadow: 0 0 8px rgba(167, 93, 93, 0.8);
+    }
 
-    input[type="file"], button {
-      width: 100%;
-      box-sizing: border-box;
-    }
+    input[type="file"], button {
+      width: 100%;
+      box-sizing: border-box;
+    }
 
-    input[type="file"] {
-      font-size: 1rem;
-      margin: 1rem 0;
-      border-radius: 6px;
-      padding: 0.5rem;
-      border: 1px solid #d9c9c9;
-      background: #fffaf0;
-      color: #5b4636;
-    }
+    input[type="file"] {
+      font-size: 1rem;
+      margin: 1rem 0;
+      border-radius: 6px;
+      padding: 0.5rem;
+      border: 1px solid #d9c9c9;
+      background: #fffaf0;
+      color: #5b4636;
+    }
 
-    button {
-      font-size: 1.2rem;
-      padding: 0.6rem 2rem;
-      border: none;
-      border-radius: 8px;
-      background: #c97c7c;
-      color: #fffaf0;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      min-height: 44px;
-      box-shadow: 0 3px 6px rgba(201, 124, 124, 0.5);
-    }
-    button:hover {
-      background-color: #a75d5d;
-    }
+    button {
+      font-size: 1.2rem;
+      padding: 0.6rem 2rem;
+      border: none;
+      border-radius: 8px;
+      background: #c97c7c;
+      color: #fffaf0;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      min-height: 44px;
+      box-shadow: 0 3px 6px rgba(201, 124, 124, 0.5);
+    }
+    button:hover {
+      background-color: #a75d5d;
+    }
 
-    #status {
-      margin-top: 1rem;
-      color: #5b4636;
-      font-weight: 600;
-      min-height: 3rem;
-      text-align: left;
-      max-height: 150px;
-      overflow-y: auto;
-      background: #fffaf0;
-      border-radius: 6px;
-      padding: 0.5rem 1rem;
-      box-shadow: inset 0 0 6px rgba(181, 140, 138, 0.2);
-      display: flex;
-      flex-direction: column-reverse;
-    }
+    #status {
+      margin-top: 1rem;
+      color: #5b4636;
+      font-weight: 600;
+      min-height: 3rem;
+      text-align: left;
+      max-height: 150px;
+      overflow-y: auto;
+      background: #fffaf0;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      box-shadow: inset 0 0 6px rgba(181, 140, 138, 0.2);
+      display: flex;
+      flex-direction: column-reverse;
+    }
 
-    #qrCode {
-      margin: 1.5rem auto 1rem;
-      max-width: 150px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(181, 140, 138, 0.4);
-      display: block;
-    }
+    #qrCode {
+      margin: 1.5rem auto 1rem;
+      max-width: 150px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(181, 140, 138, 0.4);
+      display: block;
+    }
 
-    #galleryLabel {
-      margin-top: 0.75rem;
-      font-weight: 700;
-      color: #a75d5d;
-      font-size: 1.1rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-      user-select: none;
-    }
-    #galleryLabel .arrow {
-      font-size: 1.4rem;
-      animation: bounce 1.5s infinite;
-      color: #a75d5d;
-    }
+    #galleryLabel {
+      margin-top: 0.75rem;
+      font-weight: 700;
+      color: #a75d5d;
+      font-size: 1.1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      user-select: none;
+    }
+    #galleryLabel .arrow {
+      font-size: 1.4rem;
+      animation: bounce 1.5s infinite;
+      color: #a75d5d;
+    }
 
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(6px); }
-    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
+    }
 
-    #gallery {
-      margin-top: 1rem;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px;
-    }
+    #gallery {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
 
-    #gallery img {
-      max-width: 100px;
-      max-height: 75px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(181, 140, 138, 0.4);
-      object-fit: cover;
-      cursor: pointer;
-    }
+    #gallery img {
+      max-width: 100px;
+      max-height: 75px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(181, 140, 138, 0.4);
+      object-fit: cover;
+      cursor: pointer;
+    }
 
-    /* Lightbox */
-    #lightbox {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
-      display: none; /* Hidden by default */
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      z-index: 10;
+    /* Lightbox */
+    #lightbox {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.85); /* Slightly darker for better contrast */
+      display: none; /* Hidden by default */
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 10;
+      padding: 10px; /* Add some padding */
+    }
+    #lightbox img {
+      max-width: 90vw;
+      max-height: 80vh; /* Adjusted to give space for the download link */
+      border-radius: 10px;
+      margin-bottom: 15px; /* Increased margin */
+      box-shadow: 0 0 25px rgba(0,0,0,0.5); /* Add a shadow for the lightbox image */
+    }
+    #lightbox a {
+      color: #fffaf0; /* Brighter color for better visibility */
+      background-color: #a75d5d; /* Button-like background */
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none; /* Remove underline */
+      font-size: 1.1rem;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+    #lightbox a:hover {
+        background-color: #c97c7c;
     }
-    #lightbox img {
-      max-width: 90vw;
-      max-height: 80vh;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-    #lightbox a {
-      color: white;
-      text-decoration: underline;
-      font-size: 1.2rem;
-    }
-  </style>
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Upload Your Wedding Photo</h2>
-    <input type="file" id="fileInput" accept="image/*" multiple />
-    <button id="uploadBtn">Upload</button>
-    <div id="status"></div>
+  <div class="container">
+    <h2>Upload Your Wedding Photo</h2>
+    <input type="file" id="fileInput" accept="image/*" multiple />
+    <button id="uploadBtn">Upload</button>
+    <div id="status"></div>
 
-    <div id="qrLabel" style="font-weight:700; color:#a75d5d; margin-top: 1.2rem; font-size:1.1rem;">
-      Scan QR code to upload photos from your phone:
-    </div>
-    <img id="qrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://makreliak.github.io/svadba_uploader/" alt="QR Code to Wedding Upload Page" />
+    <div id="qrLabel" style="font-weight:700; color:#a75d5d; margin-top: 1.2rem; font-size:1.1rem;">
+      Scan QR code to upload photos from your phone:
+    </div>
+    <img id="qrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://makreliak.github.io/svadba_uploader/" alt="QR Code to Wedding Upload Page" />
 
-    <div id="galleryLabel">
-      <span class="arrow">⬇️⬇️</span> Gallery below <span class="arrow">⬇️⬇️</span>
-    </div>
-    <div id="gallery"></div>
-  </div>
+    <div id="galleryLabel">
+      <span class="arrow">⬇️⬇️</span> Gallery below <span class="arrow">⬇️⬇️</span>
+    </div>
+    <div id="gallery"></div>
+  </div>
 
-  <div id="lightbox" onclick="this.style.display='none';">
-    <img id="lightbox-img" src="" alt="Large preview">
-    <a id="download-link" href="" target="_blank">Download Full Size</a>
-  </div>
+  <div id="lightbox" onclick="event.target === this && (this.style.display='none');">     <img id="lightbox-img" src="" alt="Large preview">
+    <a id="download-link" href="" target="_blank" download>Download Full Size</a>   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/pica@8.0.0/dist/pica.min.js"></script>
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
-    import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js';
+  <script src="https://cdn.jsdelivr.net/npm/pica@8.0.0/dist/pica.min.js"></script>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
+    import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js';
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCCCwPOV2Dh0zZnEWzIdHzAxOJP1kKR6sU",
-      authDomain: "svadbafoto-22df5.firebaseapp.com",
-      projectId: "svadbafoto-22df5",
-      storageBucket: "svadbafoto-22df5.firebasestorage.app",
-      messagingSenderId: "466308248816",
-      appId: "1:466308248816:web:edf8f6920013d3fd227e35",
-    };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCCCwPOV2Dh0zZnEWzIdHzAxOJP1kKR6sU", // Reminder: Manage API keys securely
+      authDomain: "svadbafoto-22df5.firebaseapp.com",
+      projectId: "svadbafoto-22df5",
+      storageBucket: "svadbafoto-22df5.appspot.com", // Corrected: .appspot.com is standard
+      messagingSenderId: "466308248816",
+      appId: "1:466308248816:web:edf8f6920013d3fd227e35",
+    };
 
-    const app = initializeApp(firebaseConfig);
-    const storage = getStorage(app);
-    const pica = window.pica();
+    const app = initializeApp(firebaseConfig);
+    const storage = getStorage(app);
+    const pica = window.pica();
 
-    const status = document.getElementById('status');
-    const gallery = document.getElementById('gallery');
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    const downloadLink = document.getElementById('download-link');
+    const status = document.getElementById('status');
+    const gallery = document.getElementById('gallery');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const downloadLink = document.getElementById('download-link');
 
-    async function loadGallery() {
-      gallery.innerHTML = '';
-      const listRef = ref(storage, 'uploads/thumbnails/');
-      const res = await listAll(listRef);
-      for (const itemRef of res.items) {
-        const thumbUrl = await getDownloadURL(itemRef);
-        const img = document.createElement('img');
-        img.src = thumbUrl;
-        img.alt = 'Uploaded thumbnail';
+    async function loadGallery() {
+      gallery.innerHTML = ''; // Clear gallery before loading
+      const listRef = ref(storage, 'uploads/thumbnails/');
+      try {
+        const res = await listAll(listRef);
+        // Sort items by name (which includes timestamp) to show newest first
+        const sortedItems = res.items.sort((a, b) => b.name.localeCompare(a.name));
 
-        const originalRef = ref(storage, 'uploads/originals/' + itemRef.name);
-        const originalUrl = await getDownloadURL(originalRef);
+        for (const itemRef of sortedItems) {
+          const thumbUrl = await getDownloadURL(itemRef);
+          const img = document.createElement('img');
+          img.src = thumbUrl;
+          img.alt = 'Uploaded thumbnail';
 
-        img.addEventListener('click', () => {
-          lightbox.style.display = 'flex';
-          lightboxImg.src = originalUrl;
-          downloadLink.href = originalUrl;
-        });
+          // Get the original image URL for the download link
+          // Assuming original and thumbnail have the same name
+          const originalRef = ref(storage, 'uploads/originals/' + itemRef.name);
+          const originalUrl = await getDownloadURL(originalRef);
 
-        gallery.appendChild(img);
-      }
-    }
+          img.addEventListener('click', () => {
+            lightbox.style.display = 'flex';
+            // MODIFICATION: Show thumbnail in lightbox
+            lightboxImg.src = thumbUrl; 
+            lightboxImg.alt = 'Preview of ' + itemRef.name; // More descriptive alt text
+            // Set the download link to the original image URL
+            downloadLink.href = originalUrl;
+            downloadLink.setAttribute('download', itemRef.name); // Suggest original filename for download
+          });
 
-    document.getElementById('uploadBtn').addEventListener('click', async () => {
-      const fileInput = document.getElementById('fileInput');
-      status.innerHTML = '';
-      if (!fileInput.files.length) {
-        status.innerHTML = '<p>📂 Please choose at least one photo first.</p>';
-        return;
-      }
+          gallery.appendChild(img);
+        }
+        if (sortedItems.length === 0) {
+          gallery.innerHTML = '<p>No photos yet. Be the first to upload!</p>';
+        }
+      } catch (error) {
+        console.error("Error loading gallery:", error);
+        gallery.innerHTML = '<p>Error loading photos. Please try again later.</p>';
+      }
+    }
 
-      const files = fileInput.files;
-      for (let file of files) {
-        if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
-          status.innerHTML += `<p>⚠️ File <strong>${file.name}</strong> is HEIC and not supported.</p>`;
-          continue;
+    document.getElementById('uploadBtn').addEventListener('click', async () => {
+      const fileInput = document.getElementById('fileInput');
+      status.innerHTML = ''; // Clear previous statuses
+      if (!fileInput.files.length) {
+        status.innerHTML = '<p>📂 Please choose at least one photo first.</p>';
+        return;
+      }
+
+      const files = Array.from(fileInput.files); // Convert FileList to Array for easier iteration
+      let successfulUploads = 0;
+
+      for (const file of files) {
+        const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_'); // Sanitize file name
+        const fileName = Date.now() + '-' + sanitizedFileName;
+        status.innerHTML += `<p>⏳ Uploading ${sanitizedFileName}...</p>`; // Initial status
+
+        if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
+          status.innerHTML += `<p>⚠️ File <strong>${sanitizedFileName}</strong> is HEIC and currently not supported for direct upload/thumbnail generation. Please convert to JPG or PNG.</p>`;
+          continue;
+        }
+
+        if (file.size > 10 * 1024 * 1024) { // 10MB limit
+          status.innerHTML += `<p>⚠️ File <strong>${sanitizedFileName}</strong> (${(file.size / 1024 / 1024).toFixed(2)}MB) is larger than 10MB limit.</p>`;
+          continue;
+        }
+
+        const storageRef = ref(storage, 'uploads/originals/' + fileName);
+        const thumbRef = ref(storage, 'uploads/thumbnails/' + fileName);
+
+        try {
+          await uploadBytes(storageRef, file);
+          status.innerHTML += `<p>✅ Original <strong>${sanitizedFileName}</strong> uploaded.</p>`;
+
+          const img = new Image();
+          img.src = URL.createObjectURL(file);
+          await new Promise((resolve, reject) => { // Ensure image is loaded before resizing
+            img.onload = resolve;
+            img.onerror = reject;
+          });
+
+
+          const canvas = document.createElement('canvas');
+          // Resize based on aspect ratio for better thumbnail quality
+          const MAX_THUMB_WIDTH = 300;
+          const MAX_THUMB_HEIGHT = 200;
+          let { width, height } = img;
+          if (width > height) {
+            if (width > MAX_THUMB_WIDTH) {
+              height *= MAX_THUMB_WIDTH / width;
+              width = MAX_THUMB_WIDTH;
+            }
+          } else {
+            if (height > MAX_THUMB_HEIGHT) {
+              width *= MAX_THUMB_HEIGHT / height;
+              height = MAX_THUMB_HEIGHT;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+
+          await pica.resize(img, canvas, { quality: 3, alpha: true }); // Pica options
+          const blob = await pica.toBlob(canvas, 'image/jpeg', 0.9); // Quality 0.9 for JPEG
+          await uploadBytes(thumbRef, blob);
+          status.innerHTML += `<p>🖼️ Thumbnail for <strong>${sanitizedFileName}</strong> created and uploaded.</p>`;
+          successfulUploads++;
+        } catch (uploadError) {
+          console.error(`Error uploading ${sanitizedFileName}:`, uploadError);
+          status.innerHTML += `<p>❌ Error uploading <strong>${sanitizedFileName}</strong>. ${uploadError.message}</p>`;
+        } finally {
+          URL.revokeObjectURL(img.src); // Clean up object URL
         }
+      }
 
-        if (file.size > 10 * 1024 * 1024) {
-          status.innerHTML += `<p>⚠️ File <strong>${file.name}</strong> is larger than 10MB.</p>`;
-          continue;
-        }
-
-        const fileName = Date.now() + '-' + file.name;
-        const storageRef = ref(storage, 'uploads/originals/' + fileName);
-        const thumbRef = ref(storage, 'uploads/thumbnails/' + fileName);
-
-        await uploadBytes(storageRef, file);
-
-        const img = new Image();
-        img.src = URL.createObjectURL(file);
-        await img.decode();
-
-        const canvas = document.createElement('canvas');
-        canvas.width = 300;
-        canvas.height = 200;
-        await pica.resize(img, canvas);
-        const blob = await pica.toBlob(canvas, 'image/jpeg', 0.9);
-        await uploadBytes(thumbRef, blob);
-
-        status.innerHTML = `<p style="font-size:1.2rem; font-weight:700; color:green;">✅ Successfully uploaded</p>`;
+      if (successfulUploads > 0) {
+        status.innerHTML += `<p style="font-size:1.1rem; font-weight:700; color:green;">🎉 ${successfulUploads} photo(s) processed successfully! Refreshing gallery...</p>`;
+        await loadGallery(); // Refresh gallery to show new images
       }
+      if (successfulUploads === 0 && files.length > 0) {
+        status.innerHTML += `<p style="font-size:1.1rem; font-weight:700; color:red;">No photos were successfully uploaded.</p>`;
+      }
+      fileInput.value = ''; // Clear the file input
+    });
 
-      await loadGallery();
-    });
-
-    loadGallery();
-  </script>
+    // Initial gallery load
+    loadGallery();
+  </script>
 </body>
 </html>
