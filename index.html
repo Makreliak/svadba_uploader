@@ -130,7 +130,7 @@
       const fileInput = document.getElementById('fileInput');
       const status = document.getElementById('status');
 
-      status.innerHTML = '';
+      status.innerHTML = '';  // Clear previous logs before uploading
 
       if (!fileInput.files.length) {
         status.textContent = '📂 Please choose at least one photo first.';
@@ -138,17 +138,20 @@
       }
 
       const files = fileInput.files;
+      let allSuccess = true;
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
 
         if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
-          status.innerHTML += `<p>⚠️ File <strong>${file.name}</strong> is HEIC and not supported.</p>`;
+          status.innerHTML = `<p>⚠️ File <strong>${file.name}</strong> is HEIC and not supported.</p>` + status.innerHTML;
+          allSuccess = false;
           continue;
         }
 
         if (file.size > 10 * 1024 * 1024) {
-          status.innerHTML += `<p>⚠️ File <strong>${file.name}</strong> is larger than 10MB.</p>`;
+          status.innerHTML = `<p>⚠️ File <strong>${file.name}</strong> is larger than 10MB.</p>` + status.innerHTML;
+          allSuccess = false;
           continue;
         }
 
@@ -156,12 +159,17 @@
         const storageRef = ref(storage, 'uploads/' + fileName);
 
         try {
-          status.innerHTML += `<p>⏳ Uploading <strong>${file.name}</strong>...</p>`;
+          status.innerHTML = `<p>⏳ Uploading <strong>${file.name}</strong>...</p>` + status.innerHTML;
           await uploadBytes(storageRef, file);
-          status.innerHTML += `<p>✅ Uploaded <strong>${file.name}</strong> successfully!</p>`;
+          status.innerHTML = `<p>✅ Uploaded <strong>${file.name}</strong> successfully!</p>` + status.innerHTML;
         } catch (error) {
-          status.innerHTML += `<p>❌ Upload failed for <strong>${file.name}</strong>: ${error.message}</p>`;
+          status.innerHTML = `<p>❌ Upload failed for <strong>${file.name}</strong>: ${error.message}</p>` + status.innerHTML;
+          allSuccess = false;
         }
+      }
+
+      if (allSuccess) {
+        status.innerHTML = `<p style="font-size:1.3rem; color:#4CAF50;">🎉 All files uploaded successfully!</p>`;
       }
     });
   </script>
