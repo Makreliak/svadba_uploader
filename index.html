@@ -95,6 +95,27 @@
       flex-direction: column-reverse;
     }
 
+    #gallery {
+      margin-top: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    #gallery img {
+      width: 120px;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    #gallery img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
     #qrCode {
       margin-top: 2rem;
       max-width: 150px;
@@ -109,13 +130,14 @@
     <input type="file" id="fileInput" accept="image/*" multiple />
     <button id="uploadBtn">Upload</button>
     <div id="status"></div>
+    <div id="gallery"></div>
     <img id="qrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://makreliak.github.io/svadba_uploader/" alt="QR Code to Wedding Upload Page" />
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/pica@8.0.0/dist/pica.min.js"></script>
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
-    import { getStorage, ref, uploadBytes } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js';
+    import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyCCCwPOV2Dh0zZnEWzIdHzAxOJP1kKR6sU",
@@ -179,7 +201,40 @@
           status.innerHTML += `<p>❌ Upload failed for <strong>${file.name}</strong>: ${error.message}</p>`;
         }
       }
+      await loadGallery();
     });
+
+    async function loadGallery() {
+      const gallery = document.getElementById('gallery');
+      gallery.innerHTML = '<p>Loading gallery...</p>';
+
+      try {
+        const listRef = ref(storage, 'uploads/thumbnails/');
+        const res = await listAll(listRef);
+
+        if (res.items.length === 0) {
+          gallery.innerHTML = '<p>No photos uploaded yet.</p>';
+          return;
+        }
+
+        gallery.innerHTML = ''; // Clear loading message
+
+        for (const itemRef of res.items) {
+          const url = await getDownloadURL(itemRef);
+          const img = document.createElement('img');
+          img.src = url;
+          img.alt = 'Wedding photo thumbnail';
+          img.addEventListener('click', () => window.open(url.replace('thumbnails', 'originals'), '_blank'));
+          gallery.appendChild(img);
+        }
+      } catch (error) {
+        gallery.innerHTML = `<p>Error loading gallery: ${error.message}</p>`;
+      }
+    }
+
+    // Load gallery on page load
+    loadGallery();
+
   </script>
 </body>
 </html>
