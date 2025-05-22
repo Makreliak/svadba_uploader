@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Photo Upload</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: sans-serif;
@@ -25,8 +25,8 @@
 </head>
 <body>
   <h2>Upload Your Photo</h2>
-  <input type="file" id="fileInput" accept="image/*">
-  <button onclick="uploadFile()">Upload</button>
+  <input type="file" id="fileInput" accept="image/*" />
+  <button id="uploadBtn">Upload</button>
   <div id="status"></div>
 
   <script type="module">
@@ -45,7 +45,7 @@
     const app = initializeApp(firebaseConfig);
     const storage = getStorage(app);
 
-    window.uploadFile = async () => {
+    document.getElementById('uploadBtn').addEventListener('click', async () => {
       const fileInput = document.getElementById('fileInput');
       const status = document.getElementById('status');
 
@@ -56,10 +56,23 @@
 
       const file = fileInput.files[0];
 
-      // Check for HEIC file (from iPhones)
       if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
         status.textContent = "⚠️ HEIC images are not supported. Please select a JPG or PNG.";
         return;
       }
 
-      const fileName = Date.now() + '-
+      const fileName = Date.now() + '-' + file.name;
+      const storageRef = ref(storage, 'uploads/' + fileName);
+
+      status.textContent = '⏳ Uploading...';
+      try {
+        await uploadBytes(storageRef, file);
+        status.textContent = '✅ Upload successful!';
+      } catch (error) {
+        console.error(error);
+        status.textContent = '❌ Upload failed: ' + error.message;
+      }
+    });
+  </script>
+</body>
+</html>
