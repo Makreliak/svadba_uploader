@@ -205,7 +205,7 @@
     <div id="gallery"></div>
   </div>
 
-  <div id="lightbox" onclick="closeLightbox(event)">
+  <div id="lightbox">
     <span id="lightbox-close" title="Close">&times;</span>
     <img id="lightbox-img" src="" alt="Zoomed thumbnail" />
     <a id="download-link" href="" target="_blank" rel="noopener noreferrer" download>Download Full Size</a>
@@ -327,6 +327,10 @@
     });
 
     window.onload = loadGallery;
+
+    lightbox.addEventListener('click', closeLightbox);
+    lightboxClose.addEventListener('click', closeLightbox);
+
   </script>
 </body>
 </html>
