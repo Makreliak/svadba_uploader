@@ -2,128 +2,104 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wedding Photo Upload</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Photo Upload</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Open+Sans&display=swap');
-
     body {
-      font-family: 'Open Sans', sans-serif;
-      margin: 0;
-      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      padding: 2rem;
       background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
       background-size: cover;
-      position: relative;
-      color: #fff;
+      color: #333;
+      min-height: 100vh;
+      margin: 0;
     }
-
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(0, 0, 0, 0.5);
-      z-index: 0;
-    }
-
-    .container {
-      z-index: 1;
-      background: rgba(255, 255, 255, 0.15);
-      padding: 2rem 3rem;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-      text-align: center;
-      max-width: 400px;
-      width: 90vw;
-      backdrop-filter: blur(8px);
-    }
-
-    h2 {
-      font-family: 'Great Vibes', cursive;
-      font-size: 3rem;
-      margin-bottom: 0.5rem;
-      color: #fff;
-      text-shadow: 0 0 10px rgba(0,0,0,0.7);
-    }
-
-    input[type="file"] {
-      font-size: 1rem;
-      margin: 1rem 0;
-      border-radius: 6px;
-      padding: 0.5rem;
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    button, #langToggle {
-      font-size: 1.2rem;
-      padding: 0.6rem 2rem;
-      border: none;
-      border-radius: 8px;
-      background: #f0a500;
-      color: #fff;
-      font-weight: 600;
+    #langToggle {
       cursor: pointer;
-      transition: background-color 0.3s ease;
-      width: 100%;
+      background: rgba(255 255 255 / 0.85);
+      border: none;
+      border-radius: 24px;
+      padding: 8px 16px;
+      font-size: 1rem;
       margin-bottom: 1rem;
       display: flex;
-      justify-content: center;
       align-items: center;
-      gap: 0.6rem;
+      gap: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      transition: background 0.3s ease;
     }
-    button:hover, #langToggle:hover {
-      background-color: #d18c00;
+    #langToggle:hover {
+      background: rgba(255 255 255 / 1);
     }
-
-    #status {
-      margin-top: 1rem;
-      color: #fff;
+    #langToggle span.flag {
+      font-size: 1.5rem;
+    }
+    h2 {
+      background: rgba(255 255 255 / 0.8);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-top: 0;
+    }
+    input[type="file"] {
+      font-size: 1.1rem;
+      margin: 1rem 0 0.5rem 0;
+      background: rgba(255 255 255 / 0.85);
+      border-radius: 8px;
+      padding: 6px 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    button#uploadBtn {
+      font-size: 1.3rem;
+      margin: 0.8rem 0 1.2rem 0;
+      padding: 0.5rem 1.8rem;
+      border-radius: 32px;
+      border: none;
+      background: #ff7070;
+      color: white;
       font-weight: 600;
-      min-height: 3rem;
-      text-align: left;
+      box-shadow: 0 4px 12px rgba(255,112,112,0.5);
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button#uploadBtn:hover {
+      background: #ff4c4c;
+    }
+    #status {
+      width: 320px;
+      max-width: 90vw;
+      background: rgba(255 255 255 / 0.85);
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      padding: 1rem;
+      font-size: 1rem;
+      color: #333;
       max-height: 150px;
       overflow-y: auto;
       display: flex;
-      flex-direction: column-reverse; /* newest on top */
-      gap: 0.3rem;
+      flex-direction: column-reverse;
+      gap: 6px;
+      white-space: nowrap;
     }
-
     #qrCode {
-      margin-top: 2rem;
-      max-width: 150px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      margin-top: 1.5rem;
+      background: rgba(255 255 255 / 0.9);
+      padding: 10px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
-
-    /* Flag emojis style */
-    .flag {
-      font-size: 1.5rem;
-      user-select: none;
-    }
-
-    /* Status icons */
-    .icon {
-      margin-right: 0.5rem;
-      font-weight: bold;
-    }
-
   </style>
 </head>
 <body>
-  <div class="container">
-    <button id="langToggle" aria-label="Toggle Language">
-      <span class="flag" id="currentFlag">🇸🇰</span>
-      <span id="langText">Prepnúť do angličtiny</span>
-    </button>
-    <h2 id="heading">Nahrajte vašu svadobnú fotku</h2>
-    <input type="file" id="fileInput" accept="image/*" multiple />
-    <button id="uploadBtn">Nahrať</button>
-    <div id="status"></div>
-    <img id="qrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://makreliak.github.io/svadba_uploader/" alt="QR Code to Wedding Upload Page" />
-  </div>
+  <button id="langToggle"><span class="flag">🇬🇧</span><span id="langText">Switch to English</span></button>
+  <h2 id="heading">Upload your wedding photo</h2>
+  <input type="file" id="fileInput" accept="image/*" multiple />
+  <button id="uploadBtn">Upload</button>
+  <div id="status"></div>
+  <div id="qrCode"></div>
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
@@ -141,15 +117,13 @@
     const app = initializeApp(firebaseConfig);
     const storage = getStorage(app);
 
-    // Language state
-    let lang = 'sk';
+    // Language state: start with English
+    let lang = 'en';
 
-    // Translations object
     const texts = {
       sk: {
         uploadButton: 'Nahrať',
         heading: 'Nahrajte vašu svadobnú fotku',
-        toggleLang: 'Prepnúť do angličtiny',
         chooseFile: '📂 Prosím vyberte aspoň jednu fotku.',
         unsupportedFile: (name) => `⚠️ Súbor ${name} je vo formáte HEIC, ktorý nie je podporovaný.`,
         tooLarge: (name) => `⚠️ Súbor ${name} je väčší ako 5MB.`,
@@ -157,12 +131,12 @@
         uploaded: (name) => `✅ Súbor ${name} bol úspešne nahratý!`,
         uploadFailed: (name, error) => `❌ Nahrávanie súboru ${name} zlyhalo: ${error}`,
         allSuccess: '🎉 Všetky súbory boli úspešne nahraté!',
-        langFlag: '🇸🇰',
+        toggleText: 'Switch to English',
+        toggleFlag: '🇬🇧',
       },
       en: {
         uploadButton: 'Upload',
         heading: 'Upload your wedding photo',
-        toggleLang: 'Switch to Slovak',
         chooseFile: '📂 Please choose at least one photo.',
         unsupportedFile: (name) => `⚠️ File ${name} is HEIC and not supported.`,
         tooLarge: (name) => `⚠️ File ${name} is larger than 5MB.`,
@@ -170,87 +144,70 @@
         uploaded: (name) => `✅ File ${name} uploaded successfully!`,
         uploadFailed: (name, error) => `❌ Upload failed for file ${name}: ${error}`,
         allSuccess: '🎉 All files uploaded successfully!',
-        langFlag: '🇬🇧',
+        toggleText: 'Prepnúť do slovenčiny',
+        toggleFlag: '🇸🇰',
       }
     };
 
-    // Elements
-    const fileInput = document.getElementById('fileInput');
-    const status = document.getElementById('status');
+    const langToggle = document.getElementById('langToggle');
+    const langText = document.getElementById('langText');
+    const currentFlag = langToggle.querySelector('span.flag');
     const uploadBtn = document.getElementById('uploadBtn');
     const heading = document.getElementById('heading');
-    const langToggle = document.getElementById('langToggle');
-    const currentFlag = document.getElementById('currentFlag');
-    const langText = document.getElementById('langText');
+    const status = document.getElementById('status');
 
-    // Update UI language
+    // Update UI language and toggle button to show the *other* language option
     function updateLanguage() {
       const t = texts[lang];
       uploadBtn.textContent = t.uploadButton;
       heading.textContent = t.heading;
-      langText.textContent = t.toggleLang;
-      currentFlag.textContent = t.langFlag;
-      status.innerHTML = ''; // Clear status on language switch
+      langText.textContent = t.toggleText;
+      currentFlag.textContent = t.toggleFlag;
+      status.innerHTML = ''; // clear statuses on language switch
     }
 
     langToggle.addEventListener('click', () => {
-      lang = (lang === 'sk') ? 'en' : 'sk';
+      lang = lang === 'en' ? 'sk' : 'en';
       updateLanguage();
     });
 
     updateLanguage();
 
     uploadBtn.addEventListener('click', async () => {
+      const files = document.getElementById('fileInput').files;
       status.innerHTML = '';
 
-      if (!fileInput.files.length) {
-        status.innerHTML = `<div>${texts[lang].chooseFile}</div>`;
+      if (!files.length) {
+        status.textContent = texts[lang].chooseFile;
         return;
       }
 
-      const files = fileInput.files;
+      const maxSize = 10 * 1024 * 1024; // 10MB max size
       let successCount = 0;
 
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-
+      for (const file of files) {
         if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
-          const msg = `<div>${texts[lang].unsupportedFile(file.name)}</div>`;
-          status.insertAdjacentHTML('afterbegin', msg);
+          status.insertAdjacentHTML('afterbegin', `<div>${texts[lang].unsupportedFile(file.name)}</div>`);
+          continue;
+        }
+        if (file.size > maxSize) {
+          status.insertAdjacentHTML('afterbegin', `<div>${texts[lang].tooLarge(file.name)}</div>`);
           continue;
         }
 
-        if (file.size > 5 * 1024 * 1024) {
-          const msg = `<div>${texts[lang].tooLarge(file.name)}</div>`;
-          status.insertAdjacentHTML('afterbegin', msg);
-          continue;
-        }
+        status.insertAdjacentHTML('afterbegin', `<div>${texts[lang].uploading(file.name)}</div>`);
 
         const fileName = Date.now() + '-' + file.name;
         const storageRef = ref(storage, 'uploads/' + fileName);
 
         try {
-          const uploadingMsg = `<div>${texts[lang].uploading(file.name)}</div>`;
-          status.insertAdjacentHTML('afterbegin', uploadingMsg);
-
           await uploadBytes(storageRef, file);
-
-          const uploadedMsg = `<div>${texts[lang].uploaded(file.name)}</div>`;
-          status.insertAdjacentHTML('afterbegin', uploadedMsg);
           successCount++;
+          status.insertAdjacentHTML('afterbegin', `<div>${texts[lang].uploaded(file.name)}</div>`);
         } catch (error) {
-          const errorMsg = `<div>${texts[lang].uploadFailed(file.name, error.message)}</div>`;
-          status.insertAdjacentHTML('afterbegin', errorMsg);
+          status.insertAdjacentHTML('afterbegin', `<div>${texts[lang].uploadFailed(file.name, error.message)}</div>`);
         }
       }
 
-      // If all files succeeded
       if (successCount === files.length) {
-        status.innerHTML = `<div style="color:#4CAF50; font-weight:bold; display:flex; align-items:center; gap:0.5rem;">
-          <span style="font-size:1.5rem;">✅</span> ${texts[lang].allSuccess}
-        </div>`;
-      }
-    });
-  </script>
-</body>
-</html>
+        status.innerHTML = `<div style="font-weight:bold; font-size:1.1rem; color:green; display:flex; align-items:center; gap:8px;">✅
