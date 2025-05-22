@@ -290,7 +290,8 @@
         logStatus(`Resizing ${file.name}...`);
         const resizedFile = await resizeImage(file);
 
-        const storageRef = ref(storage, `wedding_photos/${Date.now()}_${file.name}`);
+        // Upload path fixed to 'uploads' folder
+        const storageRef = ref(storage, `uploads/${Date.now()}_${file.name}`);
         logStatus(`Uploading ${file.name}...`);
         await uploadBytes(storageRef, resizedFile);
 
@@ -305,7 +306,7 @@
 
     async function loadGallery() {
       gallery.innerHTML = '';
-      const listRef = ref(storage, 'wedding_photos');
+      const listRef = ref(storage, 'uploads');  // folder name fixed here as well
       try {
         const res = await listAll(listRef);
         const urls = await Promise.all(res.items.map(item => getDownloadURL(item)));
