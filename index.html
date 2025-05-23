@@ -49,7 +49,7 @@
     text-shadow: 0 0 8px rgba(167, 93, 93, 0.8);
   }
 
-  input[type="file"] {
+  input[type="file"], button {
     font-size: 1rem;
     margin: 1rem 0;
     border-radius: 6px;
@@ -63,18 +63,16 @@
 
   button {
     font-size: 1.2rem;
-    padding: 0.6rem 2rem;
     border: none;
-    border-radius: 8px;
     background: #c97c7c;
     color: #fffaf0;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    width: 100%;
     box-shadow: 0 3px 6px rgba(201, 124, 124, 0.5);
     min-height: 44px;
   }
+
   button:hover {
     background-color: #a75d5d;
     box-shadow: 0 4px 12px rgba(167, 93, 93, 0.7);
@@ -115,6 +113,7 @@
     gap: 8px;
     user-select: none;
   }
+
   #galleryLabel .arrow {
     font-size: 1.4rem;
     animation: bounce 1.5s infinite;
@@ -131,7 +130,13 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 8px;
+    gap: 12px;
+  }
+
+  #gallery div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   #gallery img {
@@ -143,9 +148,18 @@
     cursor: pointer;
     transition: transform 0.2s ease;
   }
+
   #gallery img:hover {
     transform: scale(1.1);
     box-shadow: 0 4px 16px rgba(167, 93, 93, 0.6);
+  }
+
+  #gallery a {
+    margin-top: 5px;
+    font-size: 0.8rem;
+    color: #a75d5d;
+    text-decoration: none;
+    font-weight: 600;
   }
 
   .lightbox {
@@ -183,22 +197,6 @@
     color: #fff;
     cursor: pointer;
     font-weight: bold;
-  }
-
-  @media (max-width: 768px) {
-    .container { padding: 1.5rem 2rem; max-width: 90vw; }
-    h2 { font-size: 2.6rem; }
-    button { font-size: 1.1rem; padding: 0.55rem 1.8rem; }
-    #gallery img { max-width: 90px; max-height: 70px; }
-    #qrCode { max-width: 130px; }
-  }
-
-  @media (max-width: 480px) {
-    .container { padding: 1rem 1.5rem; max-width: 95vw; }
-    h2 { font-size: 2.2rem; }
-    button { font-size: 1rem; padding: 0.5rem 1.5rem; }
-    #gallery img { max-width: 80px; max-height: 60px; }
-    .close-btn { font-size: 2rem; right: 20px; }
   }
   </style>
 </head>
@@ -251,13 +249,27 @@
           gallery.innerHTML = '<p>No photos uploaded yet.</p>';
           return;
         }
+
         for (const itemRef of res.items) {
-          const url = await getDownloadURL(itemRef);
+          const thumbUrl = await getDownloadURL(itemRef);
+          const fileName = itemRef.name;
+          const fullSizeRef = ref(storage, 'uploads/originals/' + fileName);
+          const fullSizeUrl = await getDownloadURL(fullSizeRef);
+
+          const container = document.createElement('div');
           const img = document.createElement('img');
-          img.src = url;
+          img.src = thumbUrl;
           img.alt = 'Uploaded thumbnail';
-          img.addEventListener('click', () => openLightbox(url));
-          gallery.appendChild(img);
+          img.addEventListener('click', () => openLightbox(thumbUrl));
+
+          const downloadBtn = document.createElement('a');
+          downloadBtn.href = fullSizeUrl;
+          downloadBtn.download = fileName;
+          downloadBtn.textContent = '📥 Stiahnuť plnú veľkosť';
+
+          container.appendChild(img);
+          container.appendChild(downloadBtn);
+          gallery.appendChild(container);
         }
       } catch (error) {
         console.error('Error loading gallery:', error);
