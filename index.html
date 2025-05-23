@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sk">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -47,6 +47,17 @@
     margin-bottom: 0.5rem;
     color: #a75d5d;
     text-shadow: 0 0 8px rgba(167, 93, 93, 0.8);
+  }
+
+  .disclaimer {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: #8b6b5c;
+    background-color: #fff7f0;
+    padding: 0.5rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    text-align: left;
   }
 
   input[type="file"], button {
@@ -204,6 +215,9 @@
   <div class="container">
     <h2>Nahraj nám foto zo svadby</h2>
     <input type="file" id="fileInput" accept="image/*" multiple />
+    <div class="disclaimer">
+      Nahraním fotografie dávate súhlas so zverejnením v galérii dostupnej pre všetkých hostí.
+    </div>
     <button id="uploadBtn">Nahrať</button>
     <div id="status"></div>
 
@@ -212,12 +226,6 @@
 
     <div id="galleryLabel"><span class="arrow">⬇️⬇️</span> Galéria dole <span class="arrow">⬇️⬇️</span></div>
     <div id="gallery"></div>
-  </div>
-
-  <!-- Lightbox Overlay -->
-  <div id="lightbox" class="lightbox">
-    <span class="close-btn">&times;</span>
-    <img id="lightbox-img" src="" alt="Zoomed preview" />
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/pica@8.0.0/dist/pica.min.js"></script>
