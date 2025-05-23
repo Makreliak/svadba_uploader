@@ -204,15 +204,15 @@
 </head>
 <body>
   <div class="container">
-    <h2>Upload Your Wedding Photo</h2>
+    <h2>Nahraj nám foto zo svadby</h2>
     <input type="file" id="fileInput" accept="image/*" multiple />
-    <button id="uploadBtn">Upload</button>
+    <button id="uploadBtn">Nahrať</button>
     <div id="status"></div>
 
-    <div id="qrLabel">Scan QR code to upload photos from your phone:</div>
+    <div id="qrLabel">Zdieľaj QR kód s hosťami:</div>
     <img id="qrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://makreliak.github.io/svadba_uploader/" alt="QR Code" />
 
-    <div id="galleryLabel"><span class="arrow">⬇️⬇️</span> Gallery below <span class="arrow">⬇️⬇️</span></div>
+    <div id="galleryLabel"><span class="arrow">⬇️⬇️</span> Galéria dole <span class="arrow">⬇️⬇️</span></div>
     <div id="gallery"></div>
   </div>
 
@@ -270,7 +270,7 @@
       status.innerHTML = '';
 
       if (!fileInput.files.length) {
-        status.innerHTML = '<p>📂 Please choose at least one photo first.</p>';
+        status.innerHTML = '<p>📂 Vyber aspoň jednu fotku.</p>';
         return;
       }
 
@@ -282,7 +282,7 @@
           continue;
         }
         if (file.size > 10 * 1024 * 1024) {
-          status.innerHTML += `<p>⚠️ ${file.name} is larger than 10MB.</p>`;
+          status.innerHTML += `<p>⚠️ ${file.name} má viac ako 10MB.</p>`;
           continue;
         }
 
@@ -306,9 +306,9 @@
           const blob = await pica.toBlob(canvas, 'image/jpeg', 0.9);
           await uploadBytes(thumbRef, blob);
 
-          status.innerHTML += `<p>✅ Uploaded ${file.name}</p>`;
+          status.innerHTML += `<p>✅ Nahraté ${file.name}</p>`;
         } catch (error) {
-          status.innerHTML += `<p>❌ Upload failed: ${error.message}</p>`;
+          status.innerHTML += `<p>❌ Nahrávanie zlýhalo: ${error.message}</p>`;
         }
       }
 
