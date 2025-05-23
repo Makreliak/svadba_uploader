@@ -3,87 +3,325 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Photo Upload</title>
+  <title>Wedding Photo Upload</title>
   <style>
-    body {
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem;
-      background: #f9f9f9;
+  @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Open+Sans&display=swap');
+
+  body {
+    font-family: 'Open Sans', sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url('https://images.unsplash.com/photo-1523438885200-e635ba2c371e?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed;
+    background-size: cover;
+    position: relative;
+    color: #5b4636;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(255, 248, 240, 0.6);
+    z-index: 0;
+  }
+
+  .container {
+    z-index: 1;
+    background: rgba(255, 255, 250, 0.9);
+    padding: 2rem 3rem;
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(181, 140, 138, 0.3);
+    text-align: center;
+    max-width: 400px;
+    width: 90vw;
+    backdrop-filter: blur(12px);
+    color: #5b4636;
+  }
+
+  h2 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    color: #a75d5d;
+    text-shadow: 0 0 8px rgba(167, 93, 93, 0.8);
+  }
+
+  input[type="file"] {
+    font-size: 1rem;
+    margin: 1rem 0;
+    border-radius: 6px;
+    padding: 0.5rem;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #d9c9c9;
+    background: #fffaf0;
+    color: #5b4636;
+  }
+
+  button {
+    font-size: 1.2rem;
+    padding: 0.6rem 2rem;
+    border: none;
+    border-radius: 8px;
+    background: #c97c7c;
+    color: #fffaf0;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    box-shadow: 0 3px 6px rgba(201, 124, 124, 0.5);
+    min-height: 44px;
+  }
+  button:hover {
+    background-color: #a75d5d;
+    box-shadow: 0 4px 12px rgba(167, 93, 93, 0.7);
+  }
+
+  #status {
+    margin-top: 1rem;
+    color: #5b4636;
+    font-weight: 600;
+    min-height: 3rem;
+    text-align: left;
+    max-height: 150px;
+    overflow-y: auto;
+    background: #fffaf0;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    box-shadow: inset 0 0 6px rgba(181, 140, 138, 0.2);
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  #qrCode {
+    margin: 1.5rem auto 1rem;
+    max-width: 150px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(181, 140, 138, 0.4);
+    display: block;
+  }
+
+  #galleryLabel {
+    margin-top: 0.75rem;
+    font-weight: 700;
+    color: #a75d5d;
+    font-size: 1.1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+  }
+  #galleryLabel .arrow {
+    font-size: 1.4rem;
+    animation: bounce 1.5s infinite;
+    color: #a75d5d;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+  }
+
+  #gallery {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  #gallery img {
+    max-width: 100px;
+    max-height: 75px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(181, 140, 138, 0.4);
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  #gallery img:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(167, 93, 93, 0.6);
+  }
+
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .container {
+      padding: 1.5rem 2rem;
+      max-width: 90vw;
     }
-    input, button {
-      font-size: 1.2rem;
-      margin: 1rem 0;
+    h2 {
+      font-size: 2.6rem;
+    }
+    button {
+      font-size: 1.1rem;
+      padding: 0.55rem 1.8rem;
+    }
+    #gallery img {
+      max-width: 90px;
+      max-height: 70px;
+      margin: 4px;
+    }
+    #qrCode {
+      max-width: 130px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      padding: 1rem 1.5rem;
+      max-width: 95vw;
+      width: 95vw;
+    }
+    h2 {
+      font-size: 2.2rem;
+    }
+    input[type="file"] {
+      font-size: 0.9rem;
+    }
+    button {
+      font-size: 1rem;
+      padding: 0.5rem 1.5rem;
     }
     #status {
-      margin-top: 1rem;
-      color: #444;
+      font-size: 0.9rem;
+      max-height: 120px;
     }
-  </style>
+    #gallery img {
+      max-width: 80px;
+      max-height: 60px;
+      margin: 4px;
+    }
+    #qrCode {
+      max-width: 120px;
+    }
+  }
+</style>
 </head>
 <body>
-  <h2>Upload Your Photo</h2>
-  <input type="file" id="fileInput" accept="image/*" />
-  <button id="uploadBtn">Upload</button>
-  <div id="status"></div>
+  <div class="container">
+    <h2>Upload Your Wedding Photo</h2>
+    <input type="file" id="fileInput" accept="image/*" multiple />
+    <button id="uploadBtn">Upload</button>
+    <div id="status"></div>
 
+    <div id="qrLabel" style="font-weight:700; color:#a75d5d; margin-top: 1.2rem; font-size:1.1rem;">
+      Scan QR code to upload photos from your phone:
+    </div>
+    
+    <img id="qrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://makreliak.github.io/svadba_uploader/" alt="QR Code to Wedding Upload Page" />
+    
+    <div id="galleryLabel">
+      <span class="arrow">⬇️⬇️</span> Gallery below <span class="arrow">⬇️⬇️</span>
+    </div>
+    
+    <div id="gallery"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/pica@8.0.0/dist/pica.min.js"></script>
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
-    import { getStorage, ref, uploadBytes } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js';
+    import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyCCCwPOV2Dh0zZnEWzIdHzAxOJP1kKR6sU",
       authDomain: "svadbafoto-22df5.firebaseapp.com",
       projectId: "svadbafoto-22df5",
-      storageBucket: "svadbafoto-22df5.firebasestorage.app", // ✅ Left untouched as requested
+      storageBucket: "svadbafoto-22df5.firebasestorage.app",
       messagingSenderId: "466308248816",
       appId: "1:466308248816:web:edf8f6920013d3fd227e35",
     };
 
     const app = initializeApp(firebaseConfig);
     const storage = getStorage(app);
+    const pica = window.pica();
+
+    const status = document.getElementById('status');
+    const gallery = document.getElementById('gallery');
+
+    async function loadGallery() {
+      gallery.innerHTML = '';
+      try {
+        const listRef = ref(storage, 'uploads/thumbnails/');
+        const res = await listAll(listRef);
+        if(res.items.length === 0) {
+          gallery.innerHTML = '<p>No photos uploaded yet.</p>';
+          return;
+        }
+        for (const itemRef of res.items) {
+          const url = await getDownloadURL(itemRef);
+          const img = document.createElement('img');
+          img.src = url;
+          img.alt = 'Uploaded thumbnail';
+          gallery.appendChild(img);
+        }
+      } catch (error) {
+        console.error('Error loading gallery:', error);
+        gallery.innerHTML = '<p>Error loading gallery.</p>';
+      }
+    }
 
     document.getElementById('uploadBtn').addEventListener('click', async () => {
       const fileInput = document.getElementById('fileInput');
-      const status = document.getElementById('status');
-      const file = fileInput.files[0];
+      status.innerHTML = '';
 
-      if (!file) {
-        status.textContent = '📂 Please choose a photo first.';
+      if (!fileInput.files.length) {
+        status.innerHTML = '<p>📂 Please choose at least one photo first.</p>';
         return;
       }
 
-      if (!file.type.startsWith('image/')) {
-        status.textContent = '❌ Only image files are allowed.';
-        return;
+      const files = fileInput.files;
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+
+        if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
+          status.innerHTML += `<p>⚠️ File <strong>${file.name}</strong> is HEIC and not supported.</p>`;
+          continue;
+        }
+
+        if (file.size > 10 * 1024 * 1024) {
+          status.innerHTML += `<p>⚠️ File <strong>${file.name}</strong> is larger than 10MB.</p>`;
+          continue;
+        }
+
+        const fileName = Date.now() + '-' + file.name;
+        const storageRef = ref(storage, 'uploads/originals/' + fileName);
+        const thumbRef = ref(storage, 'uploads/thumbnails/' + fileName);
+
+        try {
+          status.innerHTML += `<p>⏳ Uploading <strong>${file.name}</strong>...</p>`;
+          await uploadBytes(storageRef, file);
+
+          const img = new Image();
+          img.src = URL.createObjectURL(file);
+          await img.decode();
+
+          const canvas = document.createElement('canvas');
+          canvas.width = 300;
+          canvas.height = 200;
+
+          await pica.resize(img, canvas);
+          const blob = await pica.toBlob(canvas, 'image/jpeg', 0.9);
+          await uploadBytes(thumbRef, blob);
+
+          status.innerHTML += `<p>✅ Uploaded <strong>${file.name}</strong> and thumbnail!</p>`;
+        } catch (error) {
+          status.innerHTML += `<p>❌ Upload failed for <strong>${file.name}</strong>: ${error.message}</p>`;
+        }
       }
 
-      if (file.size > 5 * 1024 * 1024) { // 5MB max
-        status.textContent = '❌ File too large. Max 5MB.';
-        return;
-      }
+      // Clear detailed logs and show success message after all uploads
+      status.innerHTML = `<p style="font-size:1.2rem; font-weight:700; color:green;">✅ Successfully uploaded</p>`;
 
-      if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
-        status.textContent = "⚠️ HEIC images are not supported. Please upload JPG or PNG.";
-        return;
-      }
-
-      const fileName = Date.now() + '-' + file.name;
-      const storageRef = ref(storage, 'uploads/' + fileName);
-
-      status.textContent = '⏳ Uploading...';
-
-      try {
-        await uploadBytes(storageRef, file);
-        status.textContent = '✅ Upload successful!';
-        fileInput.value = ''; // Clear input
-      } catch (error) {
-        console.error(error);
-        status.textContent = '❌ Upload failed: ' + error.message;
-      }
+      await loadGallery();
     });
+
+    // Load gallery on page load
+    loadGallery();
   </script>
 </body>
 </html>
