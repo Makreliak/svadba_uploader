@@ -303,7 +303,7 @@
         const thumbRef = ref(storage, 'uploads/thumbnails/' + fileName);
 
         try {
-          status.innerHTML += `<p>⏳ Uploading <strong>${file.name}</strong>...</p>`;
+          status.innerHTML += `<p>⏳ Nahrávám <strong>${file.name}</strong>...</p>`;
           await uploadBytes(storageRef, file);
 
           const img = new Image();
@@ -324,7 +324,7 @@
         }
       }
 
-      status.innerHTML = `<p style="font-size:1.2rem; color:green;">✅ Uploads complete</p>`;
+      status.innerHTML = `<p style="font-size:1.2rem; color:green;">✅ Nahrávanie úspešné</p>`;
       await loadGallery();
     });
 
